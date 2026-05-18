@@ -1,11 +1,12 @@
-export interface ComedorOrden{
-    NombreCliente: string;
-    Detalles: OrdenDetalles[]
+export interface ComedorOrdenIN{
+    IdMesa: number 
+    Detalles: Detalles[]
 }
 
-export interface OrdenDetalles {
+export interface Detalles {
     nombre_platillo: string;
     cantidad: number;
+    precio_unitario: number;
 }
 
 export interface mesa{
