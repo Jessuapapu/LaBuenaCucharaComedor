@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 
 const UrlApi = import.meta.env.VITE_URL_API;
 
-
-
 export function useMesas() {
   // 1. Definimos los estados que nuestro hook va a retornar
-  const [numeroMesa, setnumeroMesa] = useState<number>(0);
+  const [numeroMesa, setnumeroMesa] = useState<[]>([]);
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,6 +30,6 @@ export function useMesas() {
 
     obtenerMesas();
   }, []);
-
-  return { numeroMesa, cargando, error };
+  
+  return { numeroMesa,cargando, error };
 }

@@ -1,42 +1,56 @@
-import { useEffect, useState } from 'react'
 import { WebSocketComedor } from '../config/socket'
-import type { ComedorOrdenIN, Detalles, } from "../../interfaces/comedor"
-import { useMenu } from '../hooks/menu'
+import type { ComedorOrdenIN, Detalles } from "../../interfaces/comedor"
 import { useEstado } from '../hooks/estadocomedor'
 import { useMesas } from '../hooks/mesas'
 
 import { BotonMesa } from '../Componentes/mesa/mesaComponent'
 
-
-async function EnviarOrden(IdMesas: number, Detalless: Detalles[]) {
+// 1. La función de envío ahora es una función normal, sin hooks.
+export const EnviarOrden = (IdMesas: number, Detalless: Detalles[]) => {
   const ComedorOrden: ComedorOrdenIN = {
     IdMesa: IdMesas,
     Detalles: Detalless
   }
-  useEffect(() => {
-    WebSocketComedor.emit("crear_orden", ComedorOrden)
-
-  })
+  WebSocketComedor.emit("crear_orden", ComedorOrden)
 }
 
-
-export function indexs() {
-  const [NumeroMesas, setNumeroMesa] = useState<number>(0)
+export function Indexs() {
   const estadoComedor = useEstado()
-  if (estadoComedor.error != null || estadoComedor.estado.status == false) {
-    return <>
-      <h1>
-        Comedor no abierto :)
-      </h1>
-    </>
+  const { numeroMesa } = useMesas() 
+
+  if (estadoComedor.error != null || estadoComedor.estado?.status === false) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <h1 className="text-4xl font-extrabold text-red-500 animate-pulse drop-shadow-md">
+          Comedor no abierto 😴
+        </h1>
+      </div>
+    )
   }
   
-
-  setNumeroMesa(useMesas().numeroMesa)
-  return <>
-
+  const listaBotones = []
   
-  </>
+  for(let i = 0; i < numeroMesa.length; i++){
+    listaBotones.push(<BotonMesa key={i} id={i + 1} />)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <header className="mb-12 text-center">
+        <h1 className="text-4xl font-black text-gray-800 tracking-tight drop-shadow-sm">
+          Mapa del Comedor
+        </h1>
+        <p className="text-gray-500 mt-2 text-lg">Seleccione una mesa para tomar la orden</p>
+      </header>
+
+
+      <main className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
+        
+      {listaBotones}
+        
+      </main>
+    </div>
+  )
 }
 
-export default indexs;
+export default Indexs;

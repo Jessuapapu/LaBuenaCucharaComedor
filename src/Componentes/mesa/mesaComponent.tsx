@@ -3,7 +3,7 @@ import '../../styles/botonMesa.css';
 
 
 
-export function BotonMesa( id : number) {
+export function BotonMesa( { id } : any) {
   const navigate = useNavigate();
 
   const manejarClick = () => {
