@@ -15,4 +15,14 @@ export interface mesa{
 }
 
 
+export interface Platillo {
+  id: number;
+  Fecha: string;
+  NombrePlatillo: string;
+  PrecioUnico?: number;
+}
 
+export interface estadoComedor{
+    msj: string;
+    status: boolean;
+}
