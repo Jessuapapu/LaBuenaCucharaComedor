@@ -4,19 +4,19 @@ import { useMenu } from "../hooks/menu";
 import { useEstado } from "../hooks/estadocomedor";
 import { useOrdenesMesa, useDetalleOrden } from "../hooks/ordenes";
 
+// Importamos el nuevo componente
+import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles"; 
+
 export function MenuMesas() {
     const estadoComedor = useEstado();
     const menu = useMenu();
-    
-    // Tipamos useParams para decirle que esperamos un parámetro 'id' de tipo string
     const { id } = useParams<{ id: string }>();
-
+    
     const { ordenActiva, historial, cargando } = useOrdenesMesa(id);
     const { detallesOrden, cargandoDetalles, obtenerDetalle, limpiarDetalles } = useDetalleOrden();
-    
+
     const [modalAbierto, setModalAbierto] = useState<boolean>(false);
 
-    // Tipamos el ID como number porque así lo espera nuestro backend y el hook
     const manejarClicDetalle = async (idOrden: number) => {
         setModalAbierto(true);
         await obtenerDetalle(idOrden);
@@ -34,103 +34,105 @@ export function MenuMesas() {
 
     if (estadoComedor.error != null || estadoComedor.estado?.status === false || menu.error != null) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="flex items-center justify-center min-h-screen bg-gray-50">
                 <h1 className="text-4xl font-extrabold text-red-500 animate-pulse drop-shadow-md">
-                    Comedor no abierto 😴
+                    Comedor no abierto 
                 </h1>
             </div>
         );
     }
 
     if (cargando) {
-        return <div className="p-6 text-center text-gray-500 font-bold">Cargando datos de la mesa...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center text-gray-400 font-semibold animate-pulse text-lg">
+                    Cargando información de la mesa...
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">Mesa #{id}</h1>
+        <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-screen bg-gray-50">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+                <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">
+                    Mesa <span className="text-blue-600">#{id}</span>
+                </h1>
+            </div>
 
-            <h2 className="text-xl font-semibold mb-3 text-blue-600">Orden Activa</h2>
-            {ordenActiva ? (
-                <div 
-                    onClick={() => manejarClicDetalle(ordenActiva.IdOrden)}
-                    className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded shadow-sm mb-8 cursor-pointer hover:bg-blue-100 transition"
-                >
-                    <div className="flex justify-between items-center">
-                        <span className="font-bold text-lg">Orden #{ordenActiva.IdOrden}</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold">
-                            En Curso
-                        </span>
-                    </div>
-                    <p className="text-gray-600 mt-2">Hora de entrada: {formatearFecha(ordenActiva.HoraEntrada)}</p>
-                </div>
-            ) : (
-                <p className="text-gray-500 mb-8 italic">No hay órdenes activas en esta mesa.</p>
-            )}
-
-            <h2 className="text-xl font-semibold mb-3 text-gray-700">Historial (Terminadas)</h2>
-            {historial.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {historial.map((orden) => (
-                        <div 
-                            key={orden.IdOrden} 
-                            onClick={() => manejarClicDetalle(orden.IdOrden)}
-                            className="bg-white border p-4 rounded shadow-sm cursor-pointer hover:shadow-md transition"
-                        >
-                            <h3 className="font-bold">Orden #{orden.IdOrden}</h3>
-                            <div className="text-sm text-gray-600 mt-1">
-                                <p>Entrada: {formatearFecha(orden.HoraEntrada)}</p>
-                                <p>Salida: {formatearFecha(orden.HoraSalida)}</p>
-                            </div>
+            {/* SECCIÓN: ORDEN ACTIVA */}
+            <div className="mb-10">
+                <h2 className="text-lg font-bold mb-4 text-gray-500 uppercase tracking-wider">Orden Activa</h2>
+                {ordenActiva ? (
+                    <div 
+                        onClick={() => manejarClicDetalle(ordenActiva.IdOrden)}
+                        className="bg-gradient-to-r from-blue-50 to-white border-l-4 border-blue-500 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                    >
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="font-bold text-2xl text-blue-900 group-hover:text-blue-600 transition-colors">
+                                Pedido #{ordenActiva.IdOrden}
+                            </span>
+                            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
+                                En Curso
+                            </span>
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <p className="text-gray-500 italic">No hay historial para esta mesa.</p>
-            )}
+                        <p className="text-gray-500 font-medium flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Entrada: {formatearFecha(ordenActiva.HoraEntrada)}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="bg-gray-100/50 border border-dashed border-gray-300 rounded-2xl p-8 text-center">
+                        <p className="text-gray-400 font-medium">La mesa está libre actualmente.</p>
+                    </div>
+                )}
+            </div>
 
-            {modalAbierto && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold">Detalle de la Orden</h3>
-                            <button 
-                                onClick={cerrarModal}
-                                className="text-gray-500 hover:text-red-500 font-bold text-xl"
+            {/* SECCIÓN: HISTORIAL DE ÓRDENES */}
+            <div>
+                <h2 className="text-lg font-bold mb-4 text-gray-500 uppercase tracking-wider">Historial</h2>
+                {historial.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {historial.map((orden) => (
+                            <div 
+                                key={orden.IdOrden} 
+                                onClick={() => manejarClicDetalle(orden.IdOrden)}
+                                className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer group"
                             >
-                                &times;
-                            </button>
-                        </div>
-
-                        {cargandoDetalles ? (
-                            <p className="text-center text-gray-500 py-4 animate-pulse">Cargando platillos...</p>
-                        ) : detallesOrden.length > 0 ? (
-                            <div className="divide-y">
-                                {detallesOrden.map((item, index) => (
-                                    <div key={index} className="py-3 flex justify-between">
-                                        <div>
-                                            <p className="font-semibold">{item.nombre_platillo}</p>
-                                            <p className="text-sm text-gray-500">Cant: {item.cantidad} x C${item.precio_unitario}</p>
-                                        </div>
-                                        <div className="font-bold text-gray-800">
-                                            C${(item.cantidad * item.precio_unitario).toFixed(2)}
-                                        </div>
-                                    </div>
-                                ))}
+                                <div className="flex justify-between items-start mb-3">
+                                    <h3 className="font-bold text-lg text-gray-700 group-hover:text-blue-500 transition-colors">
+                                        Pedido #{orden.IdOrden}
+                                    </h3>
+                                    <span className="bg-gray-100 text-gray-500 px-2 py-1 rounded text-xs font-semibold">
+                                        Terminada
+                                    </span>
+                                </div>
+                                <div className="space-y-1 text-sm text-gray-500">
+                                    <p className="flex justify-between">
+                                        <span>Entrada:</span> 
+                                        <span className="font-medium text-gray-700">{formatearFecha(orden.HoraEntrada)}</span>
+                                    </p>
+                                    <p className="flex justify-between">
+                                        <span>Salida:</span> 
+                                        <span className="font-medium text-gray-700">{formatearFecha(orden.HoraSalida)}</span>
+                                    </p>
+                                </div>
                             </div>
-                        ) : (
-                            <p className="text-center text-gray-500 py-4">No se encontraron detalles.</p>
-                        )}
-                        
-                        <button 
-                            onClick={cerrarModal}
-                            className="mt-6 w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
-                        >
-                            Cerrar
-                        </button>
+                        ))}
                     </div>
-                </div>
-            )}
+                ) : (
+                    <p className="text-gray-400 italic">No hay registros de pedidos anteriores.</p>
+                )}
+            </div>
+
+            {/* Invocación del componente Modal */}
+            <ModalDetalleOrden 
+                abierto={modalAbierto} 
+                cargando={cargandoDetalles} 
+                detalles={detallesOrden} 
+                alCerrar={cerrarModal} 
+            />
+
         </div>
     );
 }

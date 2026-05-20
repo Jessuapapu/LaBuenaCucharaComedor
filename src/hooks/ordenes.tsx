@@ -1,19 +1,7 @@
 import { useState, useEffect } from "react";
 
 // Interfaces basadas en los esquemas de tu backend
-export interface Orden {
-    IdOrden: number;
-    HoraEntrada: string;
-    HoraSalida: string | null;
-    Activo: boolean;
-}
-
-export interface DetallePlatillo {
-    id_orden: number;
-    nombre_platillo: string;
-    cantidad: number;
-    precio_unitario: number;
-}
+import type { Orden, Detalles } from "../../interfaces/comedor";
 
 const API_BASE_URL = import.meta.env.VITE_URL_API;
 
@@ -60,7 +48,7 @@ export function useOrdenesMesa(idMesa: string | undefined) {
 }
 
 export function useDetalleOrden() {
-    const [detallesOrden, setDetallesOrden] = useState<DetallePlatillo[]>([]);
+    const [detallesOrden, setDetallesOrden] = useState<Detalles[]>([]);
     const [cargandoDetalles, setCargandoDetalles] = useState<boolean>(false);
 
     const obtenerDetalle = async (idOrden: number) => {
@@ -70,7 +58,7 @@ export function useDetalleOrden() {
             const res = await fetch(`${API_BASE_URL}/ordenes/detalle/?IdPedido=${idOrden}`);
             if (!res.ok) throw new Error("Error obteniendo detalles");
             
-            const data: DetallePlatillo[] = await res.json();
+            const data: Detalles[] = await res.json();
             setDetallesOrden(data);
         } catch (error) {
             console.error("Error al cargar detalles:", error);

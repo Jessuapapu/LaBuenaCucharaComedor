@@ -1,13 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
 import '../src/styles/indexs.css'
 import './styles/botonMesa.css'
-import Router from './router/router.tsx'
+import Routess from './router/router.tsx'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Router />
-  </StrictMode>,
-  
-)
+ReactDOM.createRoot(document.getElementById("root")!).render(
+   <React.StrictMode>
+    <RouterProvider router={Routess()} />
+  </React.StrictMode>
+);
+

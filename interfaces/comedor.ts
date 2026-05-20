@@ -26,3 +26,19 @@ export interface estadoComedor{
     msj: string;
     status: boolean;
 }
+
+
+export interface ModalDetalleOrdenProps {
+    abierto: boolean;
+    cargando: boolean;
+    detalles: Detalles[];
+    alCerrar: () => void;
+}
+
+export interface Orden {
+    IdOrden: number;
+    HoraEntrada: string;
+    HoraSalida: string | null;
+    Activo: boolean;
+}
+
