@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-
-// Interfaces basadas en los esquemas de tu backend
 import type { Orden, Detalles } from "../../interfaces/comedor";
+
 
 const API_BASE_URL = import.meta.env.VITE_URL_API;
 
 export function useOrdenesMesa(idMesa: string | undefined) {
-    // Tipamos explícitamente los estados
     const [ordenActiva, setOrdenActiva] = useState<Orden | null>(null);
     const [historial, setHistorial] = useState<Orden[]>([]);
     const [cargando, setCargando] = useState<boolean>(true);
@@ -23,18 +21,14 @@ export function useOrdenesMesa(idMesa: string | undefined) {
                     fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`)
                 ]);
 
-                if (!resActiva.ok || !resHistorial.ok) {
-                    throw new Error("Error en la respuesta del servidor");
-                }
+                if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
 
                 const dataActiva = await resActiva.json();
                 const dataHistorial: Orden[] = await resHistorial.json();
 
-                // Manejo defensivo por si FastAPI retorna un array en la orden activa
-                setOrdenActiva(Array.isArray(dataActiva) ? (dataActiva[0] as Orden || null) : (dataActiva as Orden));
+                setOrdenActiva(Array.isArray(dataActiva) ? (dataActiva[0] || null) : dataActiva);
                 setHistorial(dataHistorial);
             } catch (err) {
-                console.error("Error al cargar las órdenes:", err);
                 setError(err instanceof Error ? err : new Error(String(err)));
             } finally {
                 setCargando(false);
@@ -61,7 +55,7 @@ export function useDetalleOrden() {
             const data: Detalles[] = await res.json();
             setDetallesOrden(data);
         } catch (error) {
-            console.error("Error al cargar detalles:", error);
+            console.error(error);
         } finally {
             setCargandoDetalles(false);
         }

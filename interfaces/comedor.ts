@@ -42,3 +42,31 @@ export interface Orden {
     Activo: boolean;
 }
 
+export interface BotonMesaProps {
+    id: number | string;
+    // Opcional: Podrías pasar el estado para cambiar el color
+    estado?: 'libre' | 'ocupada'; 
+}
+
+export interface ModalDetalleOrdenProps {
+    abierto: boolean;
+    cargando: boolean;
+    detalles: Detalles[];
+    alCerrar: () => void;
+    esActiva?: boolean; // Saber si mostramos el botón de añadir
+    alAgregarPlatillos?: () => void; // Función para navegar al menú
+}
+
+
+export interface BarraCarritoProps {
+    carrito: ItemCarrito[];
+    modificarCantidad: (idPlatillo: number, delta: number) => void;
+    enviarPedido: () => void;
+    enviandoOrden: boolean;
+    totalCarrito: number;
+    cantidadItems: number;
+}
+
+export interface ItemCarrito extends Detalles {
+    id_platillo: number; 
+}

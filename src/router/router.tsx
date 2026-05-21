@@ -1,5 +1,4 @@
-import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ReactDOM from "react-dom/client";
+import { createBrowserRouter } from 'react-router-dom';
 // Importas tus vistas (páginas)
 import Indexs from '../pages/Index';
 import Layout from '../pages/layout';
