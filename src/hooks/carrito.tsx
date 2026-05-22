@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { ItemCarrito } from "../../interfaces/comedor"; 
+// Ajusta esta ruta a donde tengas tu instancia de socket.io-client configurada
+import { WebSocketComedor } from "../config/socket"
 
-const UrlApiOrdenes = import.meta.env.VITE_URL_API;
-
-
-// Interface interna que extiende Detalles para necesitar un ID (para modificar/eliminar del array)
-
-export function useCarrito(idMesa: string | undefined) {
+export function useCarrito(idMesa: string | undefined, idOrdenActiva: number | null) {
     const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
     const [enviandoOrden, setEnviandoOrden] = useState<boolean>(false);
+    
+    // Usamos useRef para mantener la referencia del timeout y poder limpiarlo si el componente se desmonta
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);;
 
     const agregarAlCarrito = (platillo: any) => {
+        // ... (Tu lógica de agregarAlCarrito se mantiene intacta)
         setCarrito(prev => {
             const existe = prev.find(item => item.id_platillo === platillo.id);
             if (existe) {
@@ -24,7 +25,7 @@ export function useCarrito(idMesa: string | undefined) {
                 id_platillo: platillo.id, 
                 nombre_platillo: platillo.NombrePlatillo, 
                 cantidad: 1, 
-                precio_unitario: platillo.PrecioUnico || 0 
+                precio_unitario: platillo.Monto || 0 
             }];
         });
     };
@@ -41,8 +42,9 @@ export function useCarrito(idMesa: string | undefined) {
     const totalCarrito = carrito.reduce((acc, item) => acc + (item.cantidad * item.precio_unitario), 0);
     const cantidadItems = carrito.reduce((acc, item) => acc + item.cantidad, 0);
 
-    const enviarPedido = async (alTerminarExito: () => void) => {
-        if (carrito.length === 0 || !idMesa) return;
+    const enviarPedido = (alTerminarExito: () => void) => {
+        if (carrito.length === 0 || !idMesa || enviandoOrden) return;
+        
         setEnviandoOrden(true);
 
         const payload = {
@@ -54,25 +56,63 @@ export function useCarrito(idMesa: string | undefined) {
             }))
         };
 
-        try {
-            const respuesta = await fetch(`${UrlApiOrdenes}/comedor/${idMesa}`, {
-                method: 'POST',
-                headers: { 'accept': 'application/json', 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+        // --- MANEJADORES DE EVENTOS DE SOCKET ---
+        const limpiarEventosYTimeout = () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            WebSocketComedor.off("orden_generada", manejarExitoCreacion);
+            WebSocketComedor.off("error_generar", manejarError);
+            // Aquí agregaremos luego los .off() del Punto 2
+        };
 
-            if (!respuesta.ok) throw new Error("Error al enviar la orden");
-
+        const manejarExitoCreacion = (_data: any) => {
+            // data traerá { IdMesa, IdOrden } según tu backend
+            limpiarEventosYTimeout();
             setCarrito([]); 
-            alTerminarExito(); // Ejecutamos un callback (ej. recargar la vista, lanzar una alerta)
-            
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Hubo un problema al enviar la orden a cocina.");
-        } finally {
             setEnviandoOrden(false);
+            alTerminarExito();
+        };
+
+        const manejarError = (data: any) => {
+            // data traerá { MENSAJE } según tu backend
+            limpiarEventosYTimeout();
+            setEnviandoOrden(false);
+            alert(data.MENSAJE || "Hubo un error en el servidor al procesar la orden.");
+        };
+
+        // Suscribimos los listeners
+        WebSocketComedor.on("orden_generada", manejarExitoCreacion);
+        WebSocketComedor.on("error_generar", manejarError);
+
+        // --- TIMEOUT DE 2 MINUTOS (120,000 ms) ---
+        timeoutRef.current = setTimeout(() => {
+            limpiarEventosYTimeout();
+            setEnviandoOrden(false);
+            alert("Tiempo de espera agotado (2 minutos). El servidor no respondió, por favor verifica si la orden se creó o intenta de nuevo.");
+        }, 120000);
+
+        // --- EMISIÓN DEL EVENTO ---
+        if (!idOrdenActiva) {
+            // PUNTO 1: NO HAY ORDEN ACTIVA -> CREAMOS UNA NUEVA
+            WebSocketComedor.emit("crear_orden", payload);
+        } else {
+            // PUNTO 2: HAY ORDEN ACTIVA -> AGREGAMOS A LA EXISTENTE
+            // TODO: Ajustar este evento y payload cuando me pases la función del backend
+            console.log("Enviando a orden activa:", idOrdenActiva);
+            // WebSocketComedor.emit("agregar_detalles_orden", { IdOrden: idOrdenActiva, Detalles: payload.Detalles });
+            
+            // Simulación temporal para que no se quede pegado mientra me pasas el back:
+            setTimeout(() => manejarExitoCreacion({}), 1000); 
         }
     };
+
+    // Cleanup de seguridad por si el usuario cambia de página mientras carga
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            WebSocketComedor.off("orden_generada");
+            WebSocketComedor.off("error_generar");
+        };
+    }, []);
 
     return { 
         carrito, 

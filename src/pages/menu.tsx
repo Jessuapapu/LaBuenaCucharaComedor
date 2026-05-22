@@ -9,23 +9,25 @@ import { useCarrito } from "../hooks/carrito";
 
 // Componentes Visuales
 import { ImagenPlatilloWrapper } from "../Componentes/menu/ImagenPlatilloWrapper";
-import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles"; 
+import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles";
 import { BarraCarrito } from "../Componentes/ordenes/barraCarrito";
 
 
 export function MenuMesas() {
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate(); 
-    
+    const navigate = useNavigate();
+
     const estadoComedor = useEstado();
-    const menu = useMenu(); 
+    const menu = useMenu();
     const { ordenActiva, historial, cargando } = useOrdenesMesa(id);
     const { detallesOrden, cargandoDetalles, obtenerDetalle, limpiarDetalles } = useDetalleOrden();
-    const { carrito, agregarAlCarrito, modificarCantidad, totalCarrito, cantidadItems, enviarPedido, enviandoOrden } = useCarrito(id);
+    const idActiva = ordenActiva ? ordenActiva.IdOrden : null;
+
+    const { carrito, agregarAlCarrito, modificarCantidad, totalCarrito, cantidadItems, enviarPedido, enviandoOrden } = useCarrito(id, idActiva);
 
     // Estados para el Historial (Modal)
     const [modalAbierto, setModalAbierto] = useState<boolean>(false);
-    
+
     // Estados para la Orden Activa (Acordeón Desplegable)
     const [activaDesplegada, setActivaDesplegada] = useState<boolean>(false);
 
@@ -38,21 +40,21 @@ export function MenuMesas() {
             limpiarDetalles();
         } else {
             setActivaDesplegada(true);
-            await obtenerDetalle(idOrden); 
+            await obtenerDetalle(idOrden);
         }
     };
 
     // Cuando se hace clic en una orden del HISTORIAL (Abre el Modal)
     const manejarClicHistorial = async (idOrden: number) => {
         setModalAbierto(true);
-        await obtenerDetalle(idOrden); 
+        await obtenerDetalle(idOrden);
     };
 
     const cerrarModal = () => {
         setModalAbierto(false);
         limpiarDetalles();
         // Si la orden activa estaba desplegada, la mantenemos abierta
-        if(activaDesplegada && ordenActiva) {
+        if (activaDesplegada && ordenActiva) {
             obtenerDetalle(ordenActiva.IdOrden);
         }
     };
@@ -94,13 +96,13 @@ export function MenuMesas() {
 
     const listaMenu = menu.menu || [];
     const listaHistorial = historial || [];
-    
+
     // Calculamos el total de la orden activa si está desplegada
     const totalOrdenActiva = detallesOrden.reduce((acc, item) => acc + (item.cantidad * item.precio_unitario), 0);
 
     return (
         <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-screen bg-slate-50 pb-32 animate-[fade-in_0.3s_ease-out]">
-            
+
             {/* CABECERA */}
             <div className="flex items-center gap-4 mb-8 pb-4 border-b border-slate-200">
                 <button onClick={() => navigate('/')} className="p-2 bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-100 transition-all group">
@@ -115,16 +117,16 @@ export function MenuMesas() {
                     <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
                     <h2 className="text-lg font-bold text-slate-700 uppercase tracking-widest">Orden Activa</h2>
                 </div>
-                
+
                 {ordenActiva ? (
                     <div className="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden transition-all">
                         {/* Cabecera Clickable (Abre/Cierra el acordeón) */}
-                        <div 
+                        <div
                             onClick={() => manejarClicActiva(ordenActiva.IdOrden)}
                             className="bg-gradient-to-r from-slate-50 to-white p-6 cursor-pointer hover:bg-slate-50 flex justify-between items-center group"
                         >
                             <div>
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Ticket actual</span>
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1"> <h1> Orden actual </h1></span>
                                 <div className="flex items-center gap-3">
                                     <span className="font-black text-2xl text-slate-800">#{ordenActiva.IdOrden}</span>
                                     <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wide uppercase flex items-center gap-2">
@@ -135,7 +137,7 @@ export function MenuMesas() {
                                     Entrada: {formatearFecha(ordenActiva.HoraEntrada)}
                                 </span>
                             </div>
-                            
+
                             {/* Icono de flecha (gira si está desplegado) */}
                             <div className={`p-2 rounded-full bg-slate-100 text-slate-500 transition-transform duration-300 ${activaDesplegada ? 'rotate-180 bg-blue-100 text-blue-600' : 'group-hover:bg-slate-200'}`}>
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
@@ -206,21 +208,21 @@ export function MenuMesas() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {listaMenu.map((platillo) => (
                             <div key={platillo.id} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex gap-4">
-                                
+
                                 {/* AQUÍ APLICAMOS TU COMPONENTE ENVOLTORIO */}
                                 <div className="w-24 h-24 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 relative">
-                                    <ImagenPlatilloWrapper 
-                                        idPlatillo={platillo.id} 
-                                        nombrePlatillo={platillo.NombrePlatillo} 
+                                    <ImagenPlatilloWrapper
+                                        idPlatillo={platillo.id}
+                                        nombrePlatillo={platillo.NombrePlatillo}
                                     />
                                 </div>
 
                                 <div className="flex flex-col justify-between flex-1">
                                     <div>
                                         <h3 className="font-bold text-slate-800 leading-tight">{platillo.NombrePlatillo}</h3>
-                                        <p className="text-emerald-600 font-black mt-1">C${platillo.PrecioUnico}</p>
+                                        <p className="text-emerald-600 font-black mt-1">C${platillo.Monto}</p>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => agregarAlCarrito(platillo)}
                                         className="mt-2 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-1.5 px-3 rounded-lg text-sm transition-colors w-max self-end"
                                     >
@@ -245,8 +247,8 @@ export function MenuMesas() {
                 {listaHistorial.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {listaHistorial.map((orden) => (
-                            <div 
-                                key={orden.IdOrden} 
+                            <div
+                                key={orden.IdOrden}
                                 // El Historial SÍ abre el Modal
                                 onClick={() => manejarClicHistorial(orden.IdOrden)}
                                 className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group flex items-center justify-between"
@@ -257,11 +259,11 @@ export function MenuMesas() {
                                     </h3>
                                     <div className="space-y-1 text-sm text-slate-500">
                                         <p className="flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span> 
+                                            <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
                                             Entrada: <span className="font-medium text-slate-700">{formatearFecha(orden.HoraEntrada)}</span>
                                         </p>
                                         <p className="flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span> 
+                                            <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
                                             Salida: <span className="font-medium text-slate-700">{formatearFecha(orden.HoraSalida)}</span>
                                         </p>
                                     </div>
@@ -280,15 +282,15 @@ export function MenuMesas() {
             </div>
 
             {/* MODAL (Solo se usa para el historial ahora) */}
-            <ModalDetalleOrden 
-                abierto={modalAbierto} 
-                cargando={cargandoDetalles} 
-                detalles={detallesOrden || []} 
-                alCerrar={cerrarModal} 
+            <ModalDetalleOrden
+                abierto={modalAbierto}
+                cargando={cargandoDetalles}
+                detalles={detallesOrden || []}
+                alCerrar={cerrarModal}
                 esActiva={false} // Siempre será falso porque la activa usa la tabla
             />
 
-            <BarraCarrito 
+            <BarraCarrito
                 carrito={carrito || []}
                 modificarCantidad={modificarCantidad}
                 enviarPedido={() => enviarPedido(alTerminarPedido)}

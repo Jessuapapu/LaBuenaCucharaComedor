@@ -19,7 +19,7 @@ export interface Platillo {
   id: number;
   Fecha: string;
   NombrePlatillo: string;
-  PrecioUnico?: number;
+  Monto?: number;
 }
 
 export interface estadoComedor{

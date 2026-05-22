@@ -4,7 +4,6 @@ const UrlApi = import.meta.env.VITE_URL_API;
 
 
 export function useImagenPlatillo( NombrePlatillo: string | null = null) {
-  // 1. Definimos los estados que nuestro hook va a retornar
   const [Urlimagen, setImagen] = useState("");
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +31,6 @@ export function useImagenPlatillo( NombrePlatillo: string | null = null) {
 
     obtenerImagen();
   }, []);
-  
+
   return { Urlimagen, cargando, error };
 }
