@@ -1,70 +1,67 @@
-import { WebSocketComedor } from '../config/socket';
-import type { ComedorOrdenIN, Detalles } from "../../interfaces/comedor";
 import { useEstado } from '../hooks/estadocomedor';
 import { useMesas } from '../hooks/mesas';
 
 import { BotonMesa } from '../Componentes/mesa/mesaComponent';
 
-// Función para enviar la orden por WebSocket (se mantiene igual)
-export const EnviarOrden = (IdMesas: number, Detalless: Detalles[]) => {
-    const ComedorOrden: ComedorOrdenIN = {
-        IdMesa: IdMesas,
-        Detalles: Detalless
-    };
-    WebSocketComedor.emit("crear_orden", ComedorOrden);
-};
-
 export function Indexs() {
     const estadoComedor = useEstado();
     const { numeroMesa } = useMesas();
 
-    // PANTALLA: Error o Comedor Cerrado (Mismo diseño que MenuMesas)
+    // PANTALLA: Error o Comedor Cerrado (Adaptado a móvil)
     if (estadoComedor.error != null || estadoComedor.estado?.status === false) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6">
-                <div className="bg-red-50 border border-red-200 p-8 rounded-3xl shadow-lg text-center max-w-sm">
-                    <span className="text-5xl mb-4 block">😴</span>
-                    <h1 className="text-2xl font-extrabold text-red-600 mb-2">Comedor Cerrado</h1>
-                    <p className="text-red-400 font-medium">No se pueden tomar órdenes en este momento.</p>
+            // min-h-[100dvh] es vital en celulares para evitar recortes por la barra de direcciones
+            <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-slate-100 p-4">
+                <div className="bg-white border-t-4 border-t-red-500 px-6 py-10 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] text-center w-full max-w-sm">
+                    <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                        <span className="text-5xl">😴</span>
+                    </div>
+                    <h1 className="text-3xl font-black text-slate-800 mb-3 tracking-tight">Cerrado</h1>
+                    <p className="text-slate-500 font-medium text-lg leading-snug">
+                        No hay turno activo. <br/>Espera a que abran el sistema.
+                    </p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 p-4 md:p-8 animate-[fade-in_0.3s_ease-out]">
+        <div className="min-h-[100dvh] bg-slate-50 animate-[fade-in_0.3s_ease-out]">
             
-            {/* CABECERA */}
-            <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 max-w-7xl mx-auto border-b border-slate-200 pb-6">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">
-                        Mapa del Comedor
-                    </h1>
-                    <p className="text-slate-500 mt-2 font-medium">Seleccione una mesa para tomar la orden</p>
-                </div>
-                
-                {/* Indicador visual de estado activo */}
-                <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold tracking-wide border border-emerald-200 shadow-sm w-max">
-                    <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                    Turno Activo
+            {/* CABECERA APP-LIKE: Ultracompacta, pegajosa y con desenfoque */}
+            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+                <div className="px-4 py-3 md:px-6 md:py-4 flex items-center justify-between">
+                    <div className="flex flex-col">
+                        <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+                            Mesas
+                        </h1>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                            Comedor
+                        </span>
+                    </div>
+                    
+                    {/* Indicador estilo "Píldora" nativa */}
+                    <div className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full text-xs font-bold tracking-wide shadow-md">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Activo
+                    </div>
                 </div>
             </header>
 
-            {/* CONTENEDOR DE MESAS */}
-            <main className="max-w-7xl mx-auto">
+            {/* CONTENEDOR DE MESAS: Optimizado para pulgares */}
+            <main className="px-4 pt-6 pb-28 md:px-8 max-w-7xl mx-auto">
                 {numeroMesa && numeroMesa.length > 0 ? (
-                    /* Cuadrícula adaptable: 2 columnas en celular, 3 en tablet, 4/5 en PC */
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8 justify-items-center">
+                    /* En móvil (por defecto): 2 columnas, gap-4 (aprox 16px). Perfecto para tocar sin mirar. */
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-items-center">
                         
-                        {/* Generamos los botones dinámicamente sin usar un for-loop externo */}
                         {Array.from({ length: numeroMesa.length }).map((_, index) => (
                             <div 
                                 key={index} 
-                                className="animate-[fade-in_0.5s_ease-out_both]" 
-                                style={{ animationDelay: `${index * 50}ms` }}
+                                className="w-full flex justify-center animate-[scale-in_0.3s_ease-out_both] active:scale-95 transition-transform" 
+                                style={{ animationDelay: `${index * 20}ms` }}
                             >
                                 <BotonMesa id={index + 1} />
                             </div>
@@ -72,11 +69,13 @@ export function Indexs() {
 
                     </div>
                 ) : (
-                    /* PANTALLA: Sin mesas configuradas */
-                    <div className="bg-white border-2 border-dashed border-slate-300 rounded-3xl p-12 text-center max-w-2xl mx-auto mt-10">
-                        <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                        <h3 className="text-xl font-bold text-slate-700 mb-2">No hay mesas configuradas</h3>
-                        <p className="text-slate-500">Asegúrese de que la base de datos esté enviando el total de mesas correctamente.</p>
+                    /* ESTADO VACÍO */
+                    <div className="bg-white border-2 border-dashed border-slate-200 rounded-3xl p-8 mt-4 text-center shadow-sm">
+                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        </div>
+                        <h3 className="text-lg font-black text-slate-800 mb-1">Sin mesas</h3>
+                        <p className="text-slate-500 text-sm">No hay mesas configuradas.</p>
                     </div>
                 )}
             </main>

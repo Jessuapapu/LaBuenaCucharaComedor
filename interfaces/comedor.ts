@@ -1,6 +1,6 @@
-export interface ComedorOrdenIN{
-    IdMesa: number 
-    Detalles: Detalles[]
+export interface ComedorOrdenIN {
+    IdMesa: number;
+    Detalles: Detalles[];
 }
 
 export interface Detalles {
@@ -9,30 +9,22 @@ export interface Detalles {
     precio_unitario: number;
 }
 
-export interface mesa{
+export interface mesa {
     id_mesa: number;
     Estado: boolean;
 }
 
-
 export interface Platillo {
-  id: number;
-  Fecha: string;
-  NombrePlatillo: string;
-  Monto?: number;
+    id: number;
+    Fecha: string;
+    NombrePlatillo: string;
+    Monto?: number;
+    PrecioUnico?: number; 
 }
 
-export interface estadoComedor{
+export interface estadoComedor {
     msj: string;
     status: boolean;
-}
-
-
-export interface ModalDetalleOrdenProps {
-    abierto: boolean;
-    cargando: boolean;
-    detalles: Detalles[];
-    alCerrar: () => void;
 }
 
 export interface Orden {
@@ -44,7 +36,6 @@ export interface Orden {
 
 export interface BotonMesaProps {
     id: number | string;
-    // Opcional: Podrías pasar el estado para cambiar el color
     estado?: 'libre' | 'ocupada'; 
 }
 
@@ -53,10 +44,9 @@ export interface ModalDetalleOrdenProps {
     cargando: boolean;
     detalles: Detalles[];
     alCerrar: () => void;
-    esActiva?: boolean; // Saber si mostramos el botón de añadir
-    alAgregarPlatillos?: () => void; // Función para navegar al menú
+    esActiva?: boolean; 
+    alAgregarPlatillos?: () => void; 
 }
-
 
 export interface BarraCarritoProps {
     carrito: ItemCarrito[];
@@ -69,4 +59,43 @@ export interface BarraCarritoProps {
 
 export interface ItemCarrito extends Detalles {
     id_platillo: number; 
+}
+
+export interface MenuDiaGridProps {
+    cargando: boolean;
+    listaMenu: Platillo[];
+    alAgregar: (nombre: string, precio: number) => void;
+}
+
+export interface OrdenActivaTableProps {
+    detalles: Detalles[];
+    ordenActivaId: number | null;
+    cargandoAccion: boolean;
+    alModificarCantidad: (nombre: string, delta: number) => void;
+    alCrearOActualizar: () => void;
+    alTerminarOrden: () => void;
+    alCancelarOrden: () => void; // NUEVO
+}
+
+export interface ModalPlatilloExtraProps {
+    abierto: boolean;
+    alCerrar: () => void;
+    alConfirmar: (nombre: string, precio: number, cantidad: number) => void;
+}
+
+export interface PlatilloExtraDB {
+    nombre_platillo: string;
+    nombre_categoria: string;
+}
+
+
+export interface ModalDialogoProps {
+    abierto: boolean;
+    tipo: 'exito' | 'peligro' | 'info';
+    titulo: string;
+    mensaje: string;
+    textoConfirmar?: string;
+    mostrarCancelar?: boolean;
+    alConfirmar: () => void;
+    alCancelar: () => void;
 }

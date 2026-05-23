@@ -1,121 +1,146 @@
-import { useState } from "react";
-import type { BarraCarritoProps } from "../../../interfaces/comedor";
+import { useState, useEffect } from "react";
+import type { ItemCarrito } from "../../../interfaces/comedor"; 
+
+interface BarraCarritoProps {
+    carrito: ItemCarrito[];
+    modificarCantidad: (idPlatillo: number, delta: number) => void;
+    enviarPedido: () => void;
+    enviandoOrden: boolean;
+    totalCarrito: number;
+    cantidadItems: number;
+}
 
 export function BarraCarrito({ 
-    carrito, 
-    modificarCantidad, 
-    enviarPedido, 
-    enviandoOrden, 
-    totalCarrito, 
-    cantidadItems 
+    carrito, modificarCantidad, enviarPedido, enviandoOrden, totalCarrito, cantidadItems 
 }: BarraCarritoProps) {
     
-    // Estado local para abrir/cerrar los detalles del carrito en móvil
     const [expandido, setExpandido] = useState(false);
 
-    if (carrito.length === 0) {
-        // Si el carrito se vacía y estaba abierto, lo cerramos
-        if (expandido) setExpandido(false);
-        return null;
-    }
+    // Si el carrito se vacía, lo cerramos automáticamente
+    useEffect(() => {
+        if (carrito.length === 0 && expandido) setExpandido(false);
+    }, [carrito.length, expandido]);
+
+    if (carrito.length === 0) return null;
 
     return (
         <>
-            {/* Fondo oscuro cuando el carrito está expandido en móvil */}
+            {/* FONDO OVERLAY (Solo se muestra cuando está expandido) */}
             {expandido && (
                 <div 
-                    className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 transition-opacity md:hidden"
+                    className="fixed inset-0 bg-slate-900/60 z-40 backdrop-blur-sm transition-opacity duration-300"
                     onClick={() => setExpandido(false)}
                 />
             )}
 
-            {/* Contenedor Principal del Carrito */}
-            <div className={`fixed bottom-0 left-0 w-full bg-white z-50 transition-transform duration-300 ease-in-out md:border-t md:border-slate-200 md:shadow-[0_-10px_30px_rgba(0,0,0,0.1)] rounded-t-3xl md:rounded-none shadow-[0_-20px_40px_rgba(0,0,0,0.15)] ${expandido ? 'translate-y-0' : 'translate-y-[calc(100%-80px)] md:translate-y-0'}`}>
+            {/* CONTENEDOR DEL CARRITO (Se eleva al 90% del height en móvil) */}
+            <div className={`fixed bottom-0 left-0 w-full bg-white shadow-[0_-15px_40px_rgba(0,0,0,0.15)] z-50 transition-all duration-300 ease-out border-t border-slate-200 md:border-none md:rounded-t-none flex flex-col
+                ${expandido ? 'h-[90dvh] rounded-t-[2.5rem]' : 'translate-y-0'}
+            `}>
                 
-                <div className="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center">
-                    
-                    {/* CABECERA (Visible siempre en móvil, oculta en desktop) */}
-                    <div 
-                        className="h-20 px-6 flex items-center justify-between cursor-pointer md:hidden active:bg-slate-50 rounded-t-3xl"
-                        onClick={() => setExpandido(!expandido)}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
-                                    {cantidadItems}
-                                </span>
+                {/* INDICADOR DE ARRASTRE (Grip Line) - Solo visible en móvil expandido */}
+                {expandido && (
+                    <div className="w-full flex justify-center pt-3 pb-1 md:hidden cursor-pointer" onClick={() => setExpandido(false)}>
+                        <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
+                    </div>
+                )}
+
+                {/* BARRA RESUMEN (Clickable para abrir/cerrar) */}
+                <div 
+                    className="w-full px-5 py-4 md:px-8 md:py-6 flex items-center justify-between cursor-pointer md:cursor-default flex-shrink-0"
+                    onClick={() => setExpandido(!expandido)}
+                >
+                    {/* VISTA MÓVIL */}
+                    <div className="flex md:hidden items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-blue-600 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full shadow-md">
+                                {cantidadItems}
                             </div>
-                            <div>
-                                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">Total Parcial</p>
-                                <p className="font-black text-xl text-slate-800 leading-none">C${totalCarrito.toFixed(2)}</p>
-                            </div>
+                            <span className="font-bold text-slate-700 text-lg">Tu Pedido</span>
                         </div>
-                        <div className={`p-2 bg-slate-100 rounded-full text-slate-500 transition-transform duration-300 ${expandido ? 'rotate-180' : ''}`}>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7" /></svg>
+                        <div className="flex items-center gap-3">
+                            <span className="font-black text-2xl text-blue-600">C${totalCarrito.toFixed(2)}</span>
+                            <div className={`p-1.5 rounded-full bg-slate-100 transition-transform ${expandido ? 'rotate-180 bg-slate-200' : ''}`}>
+                                <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7" /></svg>
+                            </div>
                         </div>
                     </div>
 
-                    {/* CUERPO EXPANDIBLE (Lista de items y botón enviar) */}
-                    <div className="px-6 pb-8 md:p-6 w-full flex flex-col md:flex-row gap-6 md:justify-between border-t border-slate-100 md:border-none">
-                        
-                        {/* Lista de Items */}
-                        <div className="flex flex-col md:flex-row gap-3 overflow-y-auto max-h-[40vh] md:max-h-none md:overflow-x-auto hide-scrollbar w-full pt-4 md:pt-0">
-                            {carrito.map(item => (
-                                <div key={item.id_platillo} className="flex items-center justify-between md:justify-start gap-4 bg-slate-50 border border-slate-200 rounded-2xl p-3 md:flex-shrink-0">
-                                    
-                                    <div className="flex flex-col">
-                                        <span className="font-bold text-slate-800">{item.nombre_platillo}</span>
-                                        <span className="text-sm text-slate-500">C${item.precio_unitario * item.cantidad}</span>
-                                    </div>
-
-                                    {/* Botones + / - estilo píldora para móvil */}
-                                    <div className="flex items-center bg-white border border-slate-200 rounded-full shadow-sm">
-                                        <button 
-                                            onClick={() => modificarCantidad(item.id_platillo, -1)} 
-                                            className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-l-full transition-colors"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4" /></svg>
-                                        </button>
-                                        <span className="font-black text-slate-800 w-6 text-center select-none">{item.cantidad}</span>
-                                        <button 
-                                            onClick={() => modificarCantidad(item.id_platillo, 1)} 
-                                            className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-blue-500 hover:bg-blue-50 rounded-r-full transition-colors"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                    {/* VISTA PC (Siempre visible) */}
+                    <div className="hidden md:flex items-center justify-between w-full">
+                        <div className="text-left">
+                            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Total del Pedido</p>
+                            <p className="text-3xl font-black text-blue-600 leading-none">C${totalCarrito.toFixed(2)}</p>
                         </div>
-
-                        {/* Botón de Confirmar y Total Desktop */}
-                        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto flex-shrink-0 pt-2 border-t border-slate-100 md:border-none">
-                            <div className="hidden md:block text-right pr-4 border-r border-slate-200">
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total ({cantidadItems} items)</p>
-                                <p className="text-3xl font-black text-blue-600 leading-none">C${totalCarrito.toFixed(2)}</p>
-                            </div>
-                            <button 
-                                onClick={enviarPedido}
-                                disabled={enviandoOrden}
-                                className={`w-full md:w-auto bg-slate-900 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 ${enviandoOrden ? 'opacity-70 cursor-not-allowed' : 'hover:bg-slate-800 hover:-translate-y-1'}`}
-                            >
-                                {enviandoOrden ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        Enviando orden...
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="md:hidden bg-white/20 px-3 py-1 rounded-full text-sm">C${totalCarrito.toFixed(2)}</span>
-                                        Enviar a Cocina
-                                    </>
-                                )}
-                            </button>
-                        </div>
-
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); enviarPedido(); }}
+                            disabled={enviandoOrden}
+                            className={`bg-slate-900 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition-all flex items-center gap-3 ${enviandoOrden ? 'opacity-70 cursor-not-allowed' : 'hover:bg-slate-800 hover:-translate-y-1'}`}
+                        >
+                            {enviandoOrden ? 'Procesando...' : 'Confirmar Orden'}
+                        </button>
                     </div>
                 </div>
+
+                {/* ZONA DE PLATILLOS (Toma el espacio restante con overflow) */}
+                <div className={`flex-1 overflow-y-auto px-5 md:px-8 transition-opacity duration-300 ${expandido ? 'opacity-100' : 'opacity-0 hidden md:opacity-100 md:block'}`}>
+                    
+                    <h3 className="font-black text-slate-800 text-xl mb-4 md:hidden">Detalle</h3>
+                    
+                    <div className="flex flex-col gap-3 pb-6">
+                        {carrito.map(item => (
+                            <div key={item.id_platillo} className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-50 border border-slate-100 rounded-2xl p-4 gap-4">
+                                
+                                <div className="flex flex-col flex-1">
+                                    <span className="font-bold text-slate-800 text-lg leading-tight">
+                                        {item.nombre_platillo}
+                                    </span>
+                                    <span className="text-sm font-semibold text-slate-500 mt-1">
+                                        C${item.precio_unitario} c/u
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+                                    <span className="font-black text-slate-800 text-xl">
+                                        C${(item.precio_unitario * item.cantidad).toFixed(2)}
+                                    </span>
+                                    
+                                    {/* Selector de cantidad XL */}
+                                    <div className="flex items-center bg-white border border-slate-200 rounded-xl shadow-sm h-12">
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); modificarCantidad(item.id_platillo, -1); }} 
+                                            className="w-12 h-full flex items-center justify-center text-slate-500 hover:text-red-500 active:bg-red-50 rounded-l-xl text-2xl transition-colors"
+                                        >−</button>
+                                        <span className="font-bold text-slate-800 w-10 text-center text-lg">{item.cantidad}</span>
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); modificarCantidad(item.id_platillo, 1); }} 
+                                            className="w-12 h-full flex items-center justify-center text-slate-500 hover:text-blue-500 active:bg-blue-50 rounded-r-xl text-2xl transition-colors"
+                                        >+</button>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* BOTÓN INFERIOR FIJO EN MÓVIL */}
+                {expandido && (
+                    <div className="p-5 border-t border-slate-100 bg-white md:hidden flex-shrink-0">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); enviarPedido(); }}
+                            disabled={enviandoOrden}
+                            className={`w-full bg-blue-600 text-white font-black text-lg py-4 rounded-2xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-all flex items-center justify-center gap-3 ${enviandoOrden ? 'opacity-70 cursor-not-allowed' : 'active:scale-95'}`}
+                        >
+                            {enviandoOrden ? (
+                                <>
+                                    <div className="w-5 h-5 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Enviando a Cocina...
+                                </>
+                            ) : 'Enviar a Cocina'}
+                        </button>
+                    </div>
+                )}
             </div>
         </>
     );
