@@ -16,9 +16,8 @@ import { OrdenActivaTable } from "../Componentes/ordenes/ordenActiva"
 import { ModalPlatilloExtra } from "../Componentes/ordenes/modalPlatilloExtra";
 import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles";
 
-
-
 import { ModalDialogo } from "../Componentes/ordenes/modalDialogo";
+
 
 export function MenuMesas() {
     const { id } = useParams<{ id: string }>();
@@ -42,10 +41,11 @@ export function MenuMesas() {
 
     const [modalExtraAbierto, setModalExtraAbierto] = useState(false);
     const [modalHistorialAbierto, setModalHistorialAbierto] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [idOrdenHistorial, setIdOrdenHistorial] = useState<number | null>(null);
 
-    // ESTADO PARA EL NUEVO MODAL DE DIÁLOGO
+    // eslint-disable-next-line @typescript-eslint  
+    const [idOrdenHistorial, setIdOrdenHistorial] = useState<number | null>(null); 
+
+    // ESTADO PARA EL MODAL DE DIÁLOGO
     const [dialogo, setDialogo] = useState({
         abierto: false,
         tipo: 'info' as 'exito' | 'peligro' | 'info',
@@ -58,10 +58,15 @@ export function MenuMesas() {
 
     const cerrarDialogo = () => setDialogo(prev => ({ ...prev, abierto: false }));
 
-    const mostrarAlerta = (titulo: string, mensaje: string, tipo: 'exito' | 'peligro' | 'info' = 'exito') => {
+    // MODIFICADO: Ahora acepta una acción extra que se ejecuta DESPUÉS de darle a "Entendido"
+    const mostrarAlerta = (titulo: string, mensaje: string, tipo: 'exito' | 'peligro' | 'info' = 'exito', accionPostAlerta?: () => void) => {
         setDialogo({
             abierto: true, tipo, titulo, mensaje, textoConfirmar: 'Entendido',
-            mostrarCancelar: false, accionConfirmar: cerrarDialogo
+            mostrarCancelar: false, 
+            accionConfirmar: () => {
+                cerrarDialogo();
+                if (accionPostAlerta) accionPostAlerta();
+            }
         });
     };
 
@@ -125,9 +130,11 @@ export function MenuMesas() {
         const payload = generarPayload();
         
         if (ordenActiva) {
+            // Actualizar: solo mostramos éxito
             actualizar(payload, () => mostrarAlerta("¡Actualizado!", "Los platillos se mandaron a cocina correctamente.", "exito"));
         } else {
-            crear(payload, () => mostrarAlerta("¡Orden Enviada!", "El ticket fue abierto exitosamente.", "exito"));
+            // Crear: mostramos éxito y recargamos para que detecte la nueva orden activa
+            crear(payload, () => mostrarAlerta("¡Orden Enviada!", "El ticket fue abierto exitosamente.", "exito", () => window.location.reload()));
         }
     };
 
@@ -138,8 +145,8 @@ export function MenuMesas() {
             "¿La mesa ya ha cancelado la cuenta? Esta acción cerrará el ticket actual.",
             () => {
                 guardar(generarPayload(), () => {
-                    mostrarAlerta("Orden Cerrada", "La mesa ahora está libre.", "exito");
-                    setBorrador([]);
+                    // Cierra, vacía y te regresa al mapa
+                    mostrarAlerta("Orden Cerrada", "La mesa ahora está libre.", "exito", () => navigate('/'));
                 });
             },
             'info'
@@ -153,8 +160,8 @@ export function MenuMesas() {
             "Estás a punto de cancelar por completo la orden a la cocina. ¿Estás seguro?",
             () => {
                 cancelar(generarPayload(), () => {
-                    mostrarAlerta("Anulada", "La orden ha sido cancelada y la mesa está libre.", "exito");
-                    setBorrador([]);
+                    // Cancela, vacía y te regresa al mapa
+                    mostrarAlerta("Anulada", "La orden ha sido cancelada y la mesa está libre.", "exito", () => navigate('/'));
                 });
             },
             'peligro'

@@ -1,35 +1,56 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+// Ajusta la ruta a tu socket y a la interfaz que creaste antes
+import { WebSocketComedor } from "../config/socket";
+import type { mesa } from "../../interfaces/comedor"; 
 
-const UrlApi = import.meta.env.VITE_URL_API;
+// Ajusta a tu URL o lógica de carga inicial si la tienes diferente
+const UrlApi = import.meta.env.VITE_URL_API || "http://127.0.0.1:8000";
 
 export function useMesas() {
-  // 1. Definimos los estados que nuestro hook va a retornar
-  const [numeroMesa, setnumeroMesa] = useState<[]>([]);
-  const [cargando, setCargando] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+    const [numeroMesa, setNumeroMesa] = useState<mesa[]>([]);
+    const [cargando, setCargando] = useState(true);
 
-  useEffect(() => {
-    const obtenerMesas = async () => {
-      try {
-        const respuesta = await fetch(`${UrlApi}/comedor/NumeroMesas`);
+    // 1. Cargar las mesas iniciales por HTTP (REST normal al cargar la página)
+    useEffect(() => {
+        // Asegúrate de que esta URL coincida con tu endpoint real para obtener todas las mesas
+        fetch(`${UrlApi}/comedor/NumeroMesas`) 
+            .then(res => res.json())
+            .then((data) => {
+                setNumeroMesa(data);
+            })
+            .catch(err => console.error("Error al obtener las mesas iniciales:", err))
+            .finally(() => setCargando(false));
+    }, []);
 
-        if (!respuesta.ok) {
-          throw new Error(`HTTP error! status: ${respuesta.status}`);
-        }
+    // 2. Escuchar los eventos WebSocket para actualizar en Tiempo Real
+    useEffect(() => {
+        // Evento: Se agregó una mesa desde administración
+        const manejarAumentarMesa = (data: { IdMesa: number }) => {
+            setNumeroMesa(prevMesas => [
+                ...prevMesas,
+                { id_mesa: data.IdMesa, Estado: false } // Se agrega libre (false) por defecto
+            ]);
+        };
 
-        const data = await respuesta.json();
-        setnumeroMesa(data);
+        // Evento: Se quitó una mesa desde administración
+        const manejarEliminarMesa = () => {
+            setNumeroMesa(prevMesas => {
+                if (prevMesas.length === 0) return prevMesas;
+                // .slice(0, -1) crea una copia del array quitando exactamente el último elemento
+                return prevMesas.slice(0, -1);
+            });
+        };
 
-      } catch (err: any) {
-        console.error("Error al obtener el menú:", err);
-        setError(err.message);
-      } finally {
-        setCargando(false);
-      }
-    };
+        // Nos suscribimos a los eventos
+        WebSocketComedor.on("aumentar_mesa", manejarAumentarMesa);
+        WebSocketComedor.on("eliminar_mesa", manejarEliminarMesa);
 
-    obtenerMesas();
-  }, []);
-  
-  return { numeroMesa,cargando, error };
+        // Limpieza de seguridad al desmontar el componente (evita escuchar doble)
+        return () => {
+            WebSocketComedor.off("aumentar_mesa", manejarAumentarMesa);
+            WebSocketComedor.off("eliminar_mesa", manejarEliminarMesa);
+        };
+    }, []);
+
+    return { numeroMesa, cargando };
 }
