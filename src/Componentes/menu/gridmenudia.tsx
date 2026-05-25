@@ -1,5 +1,5 @@
 import { ImagenPlatilloWrapper } from "./ImagenPlatilloWrapper";
-import type { MenuDiaGridProps } from "../../../interfaces/comedor";
+import type { MenuDiaGridProps } from "../../interfaces/comedor";
 
 export function MenuDiaGrid({ cargando, listaMenu, alAgregar }: MenuDiaGridProps) {
     if (cargando) {

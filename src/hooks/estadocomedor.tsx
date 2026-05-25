@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { estadoComedor } from "../../interfaces/comedor";
+import type { estadoComedor } from "../interfaces/comedor";
 const UrlApi = import.meta.env.VITE_URL_API;
 
 

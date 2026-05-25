@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { ModalPlatilloExtraProps, PlatilloExtraDB } from "../../../interfaces/comedor";
+import type { ModalPlatilloExtraProps, PlatilloExtraDB } from "../../interfaces/comedor";
 
 const UrlApi = import.meta.env.VITE_URL_API 
 

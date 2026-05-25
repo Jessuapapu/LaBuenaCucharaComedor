@@ -1,4 +1,4 @@
-import type { ModalDialogoProps } from "../../../interfaces/comedor";
+import type { ModalDialogoProps } from "../../interfaces/comedor";
 
 export function ModalDialogo({ 
     abierto, tipo, titulo, mensaje, textoConfirmar = "Aceptar", mostrarCancelar = false, alConfirmar, alCancelar 

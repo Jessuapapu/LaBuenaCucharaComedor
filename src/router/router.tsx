@@ -7,8 +7,8 @@ import { MenuMesas } from '../pages/menu';
 
 
 // 1. Importas el Login y el Guardián
-import Login from '../comunes/Login'; // Ajusta la ruta a donde guardaste el componente
-import { RutaProtegida } from '../comunes/RutaProtegida'; // Ajusta la ruta
+import Login from '../pages/Login'; // Ajusta la ruta a donde guardaste el componente
+import { RutaProtegida } from './RutaProtegida'; // Ajusta la ruta
 import { VistaClienteMesa } from '../pages/ordenesCliente';
 
 export default function Routess() {

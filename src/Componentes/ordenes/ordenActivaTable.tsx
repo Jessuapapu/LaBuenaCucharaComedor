@@ -1,4 +1,4 @@
-import type { OrdenActivaTableProps } from "../../../interfaces/comedor";
+import type { OrdenActivaTableProps } from "../../interfaces/comedor";
 
 export function OrdenActivaTable({ 
     detalles, ordenActivaId, cargandoAccion, 

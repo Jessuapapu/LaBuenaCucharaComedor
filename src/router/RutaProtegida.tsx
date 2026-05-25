@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/context'; // Tu contexto de autenticación
+import { useAuth } from '../Auth/context'; // Tu contexto de autenticación
 
 export function RutaProtegida() {
     const { estaAutenticado } = useAuth();

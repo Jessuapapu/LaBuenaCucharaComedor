@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import type { Orden, Detalles } from "../../interfaces/comedor";
+import type { Orden, Detalles } from "../interfaces/comedor";
 // Ajusta esta ruta a tu instancia de socket
-import { WebSocketComedor } from "../config/socket"; 
+import { WebSocketComedor } from "../config/socket";
 
 
 const API_BASE_URL = import.meta.env.VITE_URL_API;
+const token = localStorage.getItem("access_token");
 
 export function useOrdenesMesa(idMesa: string | undefined) {
     const [ordenActiva, setOrdenActiva] = useState<Orden | null>(null);
@@ -18,10 +19,26 @@ export function useOrdenesMesa(idMesa: string | undefined) {
         const cargarOrdenes = async () => {
             setCargando(true);
             try {
+
+                const opcionesFetch = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        // Inyectamos el Authorization solo si el token existe
+                        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                    }
+                };
+
+                // 3. Le pasamos 'opcionesFetch' como segundo parámetro a cada fetch
                 const [resActiva, resHistorial] = await Promise.all([
-                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`),
-                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`)
+                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`, opcionesFetch),
+                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`, opcionesFetch)
                 ]);
+
+                // Opcional: Interceptar un 401 (No autorizado) por si el token expiró
+                if (resActiva.status === 401 || resHistorial.status === 401) {
+                    console.error("Token expirado o inválido");
+                    window.location.href = "/login";
+                }
 
                 if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
 
@@ -49,13 +66,24 @@ export function useDetalleOrden() {
 
     const obtenerDetalle = async (idOrden: number) => {
         setCargandoDetalles(true);
-        setDetallesOrden([]); 
+        setDetallesOrden([]);
         try {
-            const res = await fetch(`${API_BASE_URL}/ordenes/detalle/?IdPedido=${idOrden}`);
-            if (!res.ok) throw new Error("Error obteniendo detalles");
-            
+            const res = await fetch(`${API_BASE_URL}/ordenes/detalle/?IdPedido=${idOrden}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token ? `Bearer ${token}` : ""
+                },
+
+            });
+            if (!res.ok) {
+                window.location.href = "/login";
+                throw new Error("Error obteniendo detalles");
+            } 
+
             const data: Detalles[] = await res.json();
             setDetallesOrden(data);
+
         } catch (error) {
             console.error(error);
         } finally {
@@ -98,7 +126,7 @@ export function useCrearOrden() {
         WebSocketComedor.emit("crear_orden", payload);
     };
 
-    useEffect(() => () => { if(timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+    useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
     return { crear, cargando };
 }
 
@@ -130,7 +158,7 @@ export function useActualizarOrden() {
         WebSocketComedor.emit("actualizar_orden", payload);
     };
 
-    useEffect(() => () => { if(timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+    useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
     return { actualizar, cargando };
 }
 
@@ -162,7 +190,7 @@ export function useCancelarOrden() {
         WebSocketComedor.emit("cancelar_orden", payload);
     };
 
-    useEffect(() => () => { if(timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+    useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
     return { cancelar, cargando };
 }
 
@@ -194,6 +222,6 @@ export function useGuardarOrden() {
         WebSocketComedor.emit("guardar_orden", payload);
     };
 
-    useEffect(() => () => { if(timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+    useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
     return { guardar, cargando };
 }

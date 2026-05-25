@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { ItemCarrito } from "../../../interfaces/comedor"; 
+import type { ItemCarrito } from "../../interfaces/comedor"; 
 
 interface BarraCarritoProps {
     carrito: ItemCarrito[];

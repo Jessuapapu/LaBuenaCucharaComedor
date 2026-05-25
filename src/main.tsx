@@ -4,7 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import '../src/styles/indexs.css'
 import './styles/botonMesa.css'
 import Routess from './router/router.tsx'
-import { AuthProvider } from './context/context'
+import { AuthProvider } from './Auth/context.tsx'
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
    <React.StrictMode>

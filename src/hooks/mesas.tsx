@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 // Ajusta la ruta a tu socket y a la interfaz que creaste antes
 import { WebSocketComedor } from "../config/socket";
-import type { mesa } from "../../interfaces/comedor"; 
+import type { mesa } from "../interfaces/comedor"; 
 
 // Ajusta a tu URL o lógica de carga inicial si la tienes diferente
 const UrlApi = import.meta.env.VITE_URL_API;

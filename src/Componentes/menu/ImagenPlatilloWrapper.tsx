@@ -1,5 +1,5 @@
 import { useImagenPlatillo } from "../../hooks/imagenes"; // Ajusta la ruta a donde tengas tu hook
-import type { Props } from "../../../interfaces/comedor";
+import type { Props } from "../../interfaces/comedor";
 
 
 export function ImagenPlatilloWrapper({ nombrePlatillo }: Props) {

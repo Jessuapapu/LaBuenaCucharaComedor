@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ItemCarrito } from "../../interfaces/comedor"; 
+import type { ItemCarrito } from "../interfaces/comedor"; 
 import { useCrearOrden, useActualizarOrden } from './ordenes'
 
 // Recibimos idOrdenActiva para saber si creamos o actualizamos

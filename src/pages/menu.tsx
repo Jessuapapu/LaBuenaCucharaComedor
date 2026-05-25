@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Interfaces
-import type { Detalles, ComedorOrdenIN } from "../../interfaces/comedor";
+import type { Detalles, ComedorOrdenIN } from "../interfaces/comedor";
 
 // Hooks
 import { useMenu } from "../hooks/menu";

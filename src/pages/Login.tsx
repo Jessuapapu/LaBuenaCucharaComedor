@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../src/context/context';
+import { useAuth } from '../Auth/context';
 
 const UrlApi = import.meta.env.VITE_URL_API;
 
@@ -38,11 +38,11 @@ export default function Login() {
 
             const data = await respuesta.json();
             
-            // 1. Guardamos el token y datos en el Contexto (y LocalStorage)
+            
             login(data.access_token, data.user_info);
             
-            // 2. Redirigimos al mapa de mesas de los meseros
-            navigate('/'); // Ajusta esta ruta a donde tengas tu mapa de mesas
+            
+            navigate('/');
 
         } catch (err: any) {
             setError(err.message || "Error de conexión con el servidor");

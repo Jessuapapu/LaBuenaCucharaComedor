@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Platillo } from "../../interfaces/comedor";
+import type { Platillo } from "../interfaces/comedor";
 const UrlApi =  import.meta.env.VITE_URL_API;
 
 

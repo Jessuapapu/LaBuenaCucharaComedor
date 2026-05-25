@@ -1,4 +1,4 @@
-import type { CuentaClienteProps } from "../../../interfaces/comedor";
+import type { CuentaClienteProps } from "../../interfaces/comedor";
 
 import { ImagenPlatilloWrapper } from "../menu/ImagenPlatilloWrapper";
 
@@ -8,8 +8,7 @@ export function CuentaClienteTable({ detalles = [], ordenActivaId }: CuentaClien
     const listaSegura = Array.isArray(detalles) ? detalles : [];
     
     const subtotal = listaSegura.reduce((acc, item) => acc + ((item?.cantidad || 0) * (item?.precio_unitario || 0)), 0);
-    const iva = subtotal * 0.15; 
-    const total = subtotal + iva;
+    const total = subtotal
 
     // Pantalla de mesa libre
     if (listaSegura.length === 0 && !ordenActivaId) {
@@ -82,10 +81,6 @@ export function CuentaClienteTable({ detalles = [], ordenActivaId }: CuentaClien
                     <div className="flex justify-between text-slate-500 font-medium text-sm">
                         <span>Subtotal consumido</span>
                         <span>C${subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-500 font-medium text-sm">
-                        <span>IVA (15%)</span>
-                        <span>C${iva.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-end pt-4 border-t border-slate-200">
                         <span className="font-bold text-slate-400 uppercase tracking-widest text-sm">Total a Pagar</span>

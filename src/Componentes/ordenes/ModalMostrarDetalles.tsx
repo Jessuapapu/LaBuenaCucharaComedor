@@ -1,4 +1,4 @@
-import type { ModalDetalleOrdenProps } from '../../../interfaces/comedor';
+import type { ModalDetalleOrdenProps } from '../../interfaces/comedor';
 import { useImagenPlatillo } from '../../hooks/imagenes';
 
 export function ModalDetalleOrden({ 
