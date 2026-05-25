@@ -12,7 +12,7 @@ import { useCrearOrden, useActualizarOrden, useGuardarOrden } from "../hooks/ord
 
 // Componentes
 import { MenuDiaGrid } from "../Componentes/menu/gridmenudia";
-import { OrdenActivaTable } from "../Componentes/ordenes/ordenActiva"
+import { OrdenActivaTable } from "../Componentes/ordenes/ordenActivaTable";
 import { ModalPlatilloExtra } from "../Componentes/ordenes/modalPlatilloExtra";
 import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles";
 
@@ -42,7 +42,7 @@ export function MenuMesas() {
     const [modalExtraAbierto, setModalExtraAbierto] = useState(false);
     const [modalHistorialAbierto, setModalHistorialAbierto] = useState(false);
 
-    // eslint-disable-next-line @typescript-eslint  
+    // @ts-ignore
     const [idOrdenHistorial, setIdOrdenHistorial] = useState<number | null>(null); 
 
     // ESTADO PARA EL MODAL DE DIÁLOGO
@@ -58,7 +58,6 @@ export function MenuMesas() {
 
     const cerrarDialogo = () => setDialogo(prev => ({ ...prev, abierto: false }));
 
-    // MODIFICADO: Ahora acepta una acción extra que se ejecuta DESPUÉS de darle a "Entendido"
     const mostrarAlerta = (titulo: string, mensaje: string, tipo: 'exito' | 'peligro' | 'info' = 'exito', accionPostAlerta?: () => void) => {
         setDialogo({
             abierto: true, tipo, titulo, mensaje, textoConfirmar: 'Entendido',
@@ -295,7 +294,6 @@ export function MenuMesas() {
                 esActiva={false} 
             />
 
-            {/* NUESTRO NUEVO MODAL DE ALERTAS/CONFIRMACIONES */}
             <ModalDialogo
                 abierto={dialogo.abierto}
                 tipo={dialogo.tipo}

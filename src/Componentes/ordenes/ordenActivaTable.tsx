@@ -65,7 +65,6 @@ export function OrdenActivaTable({
                     <span className="font-black text-3xl text-blue-600">C${total.toFixed(2)}</span>
                 </div>
                 
-                {/* Botonera Mobile-First (Apilada) */}
                 <div className="flex flex-col gap-3">
                     <button 
                         onClick={alCrearOActualizar}

@@ -10,8 +10,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
    <React.StrictMode>
 
     <AuthProvider>
-      
-      {/* 2. El RouterProvider va por dentro */}
+
       <RouterProvider router={Routess()} />
       
     </AuthProvider>

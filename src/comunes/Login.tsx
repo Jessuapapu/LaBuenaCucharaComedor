@@ -42,7 +42,7 @@ export default function Login() {
             login(data.access_token, data.user_info);
             
             // 2. Redirigimos al mapa de mesas de los meseros
-            navigate('/mesero/mapa'); // Ajusta esta ruta a donde tengas tu mapa de mesas
+            navigate('/'); // Ajusta esta ruta a donde tengas tu mapa de mesas
 
         } catch (err: any) {
             setError(err.message || "Error de conexión con el servidor");

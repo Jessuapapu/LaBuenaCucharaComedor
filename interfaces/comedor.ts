@@ -99,3 +99,14 @@ export interface ModalDialogoProps {
     alConfirmar: () => void;
     alCancelar: () => void;
 }
+
+
+export interface CuentaClienteProps {
+    detalles: Detalles[];
+    ordenActivaId: number | undefined;
+}
+
+export interface Props {
+    idPlatillo: number;
+    nombrePlatillo: string;
+}

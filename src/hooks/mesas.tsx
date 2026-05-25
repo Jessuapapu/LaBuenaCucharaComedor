@@ -4,7 +4,7 @@ import { WebSocketComedor } from "../config/socket";
 import type { mesa } from "../../interfaces/comedor"; 
 
 // Ajusta a tu URL o lógica de carga inicial si la tienes diferente
-const UrlApi = import.meta.env.VITE_URL_API || "http://127.0.0.1:8000";
+const UrlApi = import.meta.env.VITE_URL_API;
 
 export function useMesas() {
     const [numeroMesa, setNumeroMesa] = useState<mesa[]>([]);
