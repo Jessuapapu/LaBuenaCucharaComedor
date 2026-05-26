@@ -10,9 +10,14 @@ import { MenuMesas } from '../pages/menu';
 import Login from '../pages/Login'; // Ajusta la ruta a donde guardaste el componente
 import { RutaProtegida } from './RutaProtegida'; // Ajusta la ruta
 import { VistaClienteMesa } from '../pages/ordenesCliente';
+import { InicioCliente } from '../pages/inicioCliente';
 
 export default function Routess() {
   return createBrowserRouter([
+    {
+      path: "/",
+      element: <InicioCliente />
+    },
     {
       element: <Layout />,
       children: [
@@ -20,6 +25,7 @@ export default function Routess() {
         // ==========================================
         // RUTAS PÚBLICAS
         // ==========================================
+
         {
           path: "/login",
           element: <Login />
@@ -37,7 +43,7 @@ export default function Routess() {
           element: <RutaProtegida />,
           children: [
             {
-              path: "/",
+              path: "/mesero",
               element: <Indexs />
             },
             {

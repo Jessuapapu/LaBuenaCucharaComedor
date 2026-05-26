@@ -5,7 +5,6 @@ import { WebSocketComedor } from "../config/socket";
 
 
 const API_BASE_URL = import.meta.env.VITE_URL_API;
-const token = localStorage.getItem("access_token");
 
 export function useOrdenesMesa(idMesa: string | undefined) {
     const [ordenActiva, setOrdenActiva] = useState<Orden | null>(null);
@@ -20,26 +19,25 @@ export function useOrdenesMesa(idMesa: string | undefined) {
             setCargando(true);
             try {
 
-                const opcionesFetch = {
-                    headers: {
-                        "Content-Type": "application/json",
-                        // Inyectamos el Authorization solo si el token existe
-                        ...(token ? { "Authorization": `Bearer ${token}` } : {})
-                    }
-                };
-
                 // 3. Le pasamos 'opcionesFetch' como segundo parámetro a cada fetch
                 const [resActiva, resHistorial] = await Promise.all([
-                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`, opcionesFetch),
-                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`, opcionesFetch)
+                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`),
+                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`)
                 ]);
 
-                // Opcional: Interceptar un 401 (No autorizado) por si el token expiró
                 if (resActiva.status === 401 || resHistorial.status === 401) {
-                    console.error("Token expirado o inválido");
-                    window.location.href = "/login";
-                }
+                    const hayToken = localStorage.getItem("access_token");
 
+                    // Si hay token guardado pero dio 401, significa que expiró. Redirigimos (Comportamiento de Mesero)
+                    if (hayToken) {
+                        console.error("Token expirado o inválido");
+                        window.location.href = "/login";
+                    } else {
+                        // Si no hay token y da 401, es un cliente viendo la cuenta. 
+                        // Lanzamos error para que no cargue datos vacíos, pero NO lo expulsamos.
+                        throw new Error("Acceso de lectura para cliente (401)");
+                    }
+                }
                 if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
 
                 const dataActiva = await resActiva.json();
@@ -68,18 +66,7 @@ export function useDetalleOrden() {
         setCargandoDetalles(true);
         setDetallesOrden([]);
         try {
-            const res = await fetch(`${API_BASE_URL}/ordenes/detalle/?IdPedido=${idOrden}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": token ? `Bearer ${token}` : ""
-                },
-
-            });
-            if (!res.ok) {
-                window.location.href = "/login";
-                throw new Error("Error obteniendo detalles");
-            } 
+            const res = await fetch(`${API_BASE_URL}/ordenes/detalle/?IdPedido=${idOrden}`);
 
             const data: Detalles[] = await res.json();
             setDetallesOrden(data);

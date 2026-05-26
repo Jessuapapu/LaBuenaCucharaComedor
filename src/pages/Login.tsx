@@ -19,7 +19,6 @@ export default function Login() {
         setCargando(true);
 
         try {
-            // ¡TRUCO CLAVE! FastAPI requiere formato form-urlencoded, NO un JSON
             const formData = new URLSearchParams();
             formData.append('username', username);
             formData.append('password', password);

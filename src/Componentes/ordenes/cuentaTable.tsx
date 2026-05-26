@@ -4,13 +4,12 @@ import { ImagenPlatilloWrapper } from "../menu/ImagenPlatilloWrapper";
 
 
 export function CuentaClienteTable({ detalles = [], ordenActivaId }: CuentaClienteProps) {
-    // 1. Protección contra undefined por si el backend tarda en enviar los detalles
     const listaSegura = Array.isArray(detalles) ? detalles : [];
     
     const subtotal = listaSegura.reduce((acc, item) => acc + ((item?.cantidad || 0) * (item?.precio_unitario || 0)), 0);
     const total = subtotal
 
-    // Pantalla de mesa libre
+    
     if (listaSegura.length === 0 && !ordenActivaId) {
         return (
             <div className="bg-white border-2 border-dashed border-slate-300 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-sm">
@@ -88,9 +87,6 @@ export function CuentaClienteTable({ detalles = [], ordenActivaId }: CuentaClien
                     </div>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white font-black text-lg py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 active:scale-95 transition-all">
-                    Llamar al Mesero
-                </button>
             </div>
         </div>
     );

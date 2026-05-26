@@ -173,7 +173,7 @@ export function MenuMesas() {
                 <div className="bg-red-50 border border-red-200 p-8 rounded-3xl shadow-lg text-center max-w-sm">
                     <span className="text-5xl mb-4 block">😴</span>
                     <h1 className="text-2xl font-extrabold text-red-600 mb-2">Comedor Cerrado</h1>
-                    <button onClick={() => navigate('/')} className="mt-6 bg-red-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-red-600 transition-colors w-full shadow-md">
+                    <button onClick={() => navigate('/mesero')} className="mt-6 bg-red-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-red-600 transition-colors w-full shadow-md">
                         Volver al inicio
                     </button>
                 </div>
