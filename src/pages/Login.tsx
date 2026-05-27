@@ -41,7 +41,7 @@ export default function Login() {
             login(data.access_token, data.user_info);
             
             
-            navigate('/');
+            navigate('/mesero');
 
         } catch (err: any) {
             setError(err.message || "Error de conexión con el servidor");
