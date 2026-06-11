@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEstado } from '../hooks/estadocomedor';
 import { useMesas } from '../hooks/mesas';
+import { Link } from 'react-router-dom';
 
 export function InicioCliente() {
     const navigate = useNavigate();
@@ -12,14 +13,14 @@ export function InicioCliente() {
         return (
             <div className="min-h-[100dvh] bg-slate-900 flex flex-col items-center justify-center p-6 relative overflow-hidden">
                 <div className="absolute top-1/4 -left-20 w-80 h-80 bg-orange-500 rounded-full blur-[100px] opacity-20"></div>
-                
+
                 <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-8 py-12 rounded-[2.5rem] shadow-2xl text-center w-full max-w-sm relative z-10">
                     <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/10">
                         <span className="text-5xl">🌙</span>
                     </div>
                     <h1 className="text-3xl font-black text-white mb-3 tracking-tight">Cerrado</h1>
                     <p className="text-slate-300 font-medium text-lg leading-snug">
-                        El comedor no está activo. <br/>Vuelve más tarde.
+                        El comedor no está activo. <br />Vuelve más tarde.
                     </p>
                 </div>
             </div>
@@ -29,7 +30,7 @@ export function InicioCliente() {
     // 2. PANTALLA: Selección de Mesa para el Cliente
     return (
         <div className="min-h-[100dvh] bg-slate-900 relative overflow-hidden font-sans">
-            
+
             {/* Efectos de iluminación de fondo */}
             <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
                 <div className="absolute top-10 -left-10 w-64 h-64 bg-orange-500 rounded-full blur-[80px]"></div>
@@ -55,9 +56,9 @@ export function InicioCliente() {
                                     onClick={() => navigate(`/cuenta/${idMesa}`)}
                                     className="group relative aspect-square w-full bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl flex flex-col items-center justify-center overflow-hidden hover:bg-white/10 hover:border-white/20 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-lg"
                                 >
-                                    
+
                                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    
+
                                     <span className="text-slate-400 font-bold text-sm tracking-wider uppercase mb-1">Mesa</span>
                                     <span className="text-5xl font-black text-white">{idMesa}</span>
                                 </button>
@@ -73,7 +74,20 @@ export function InicioCliente() {
                         <p className="text-slate-400">No hay mesas configuradas en el sistema en este momento.</p>
                     </div>
                 )}
+
+
             </main>
+            <div className='min-h-[10dvh] flex  justify-center p-6 relative overflow-hidden'>
+                <Link
+                    to="/mesero"
+                    className={`font-medium transition-colors ${location.pathname === '/mesero' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-500'}`}
+                >
+                    <p className='text-slate-300 font-medium text-lg leading-snug'>
+                        si eres mesero haz click aqui
+                    </p>
+
+                </Link>
+            </div>
         </div>
     );
 }

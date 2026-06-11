@@ -3,7 +3,7 @@ export interface ComedorOrdenIN {
     Detalles: Detalles[];
 }
 
-export interface Detalles {
+export interface   Detalles {
     nombre_platillo: string;
     cantidad: number;
     precio_unitario: number;
@@ -19,7 +19,7 @@ export interface Platillo {
     Fecha: string;
     NombrePlatillo: string;
     Monto?: number;
-    PrecioUnico?: number; 
+    PrecioUnico?: number;
 }
 
 export interface estadoComedor {
@@ -36,7 +36,7 @@ export interface Orden {
 
 export interface BotonMesaProps {
     id: number | string;
-    estado?: 'libre' | 'ocupada'; 
+    estado?: 'libre' | 'ocupada';
 }
 
 export interface ModalDetalleOrdenProps {
@@ -44,8 +44,8 @@ export interface ModalDetalleOrdenProps {
     cargando: boolean;
     detalles: Detalles[];
     alCerrar: () => void;
-    esActiva?: boolean; 
-    alAgregarPlatillos?: () => void; 
+    esActiva?: boolean;
+    alAgregarPlatillos?: () => void;
 }
 
 export interface BarraCarritoProps {
@@ -58,7 +58,7 @@ export interface BarraCarritoProps {
 }
 
 export interface ItemCarrito extends Detalles {
-    id_platillo: number; 
+    id_platillo: number;
 }
 
 export interface MenuDiaGridProps {

@@ -14,12 +14,13 @@ export function useEstado() {
     const obtenerestado = async () => {
       try {
         const respuesta = await fetch(`${UrlApi}/comedor/NumeroMesas`);
-
+        
         if (!respuesta.ok) {
           throw new Error(`HTTP error! status: ${respuesta.status}`);
         }
 
         const data = await respuesta.json();
+        console.log(data)
         setestado(data);
 
       } catch (err: any) {

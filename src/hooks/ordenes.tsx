@@ -12,50 +12,45 @@ export function useOrdenesMesa(idMesa: string | undefined) {
     const [cargando, setCargando] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
+    // Lo sacamos del useEffect para poder llamarlo desde afuera
+    const cargarOrdenes = async () => {
         if (!idMesa) return;
+        setCargando(true);
+        try {
+            const [resActiva, resHistorial] = await Promise.all([
+                fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`),
+                fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`)
+            ]);
 
-        const cargarOrdenes = async () => {
-            setCargando(true);
-            try {
-
-                // 3. Le pasamos 'opcionesFetch' como segundo parámetro a cada fetch
-                const [resActiva, resHistorial] = await Promise.all([
-                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`),
-                    fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`)
-                ]);
-
-                if (resActiva.status === 401 || resHistorial.status === 401) {
-                    const hayToken = localStorage.getItem("access_token");
-
-                    // Si hay token guardado pero dio 401, significa que expiró. Redirigimos (Comportamiento de Mesero)
-                    if (hayToken) {
-                        console.error("Token expirado o inválido");
-                        window.location.href = "/login";
-                    } else {
-                        // Si no hay token y da 401, es un cliente viendo la cuenta. 
-                        // Lanzamos error para que no cargue datos vacíos, pero NO lo expulsamos.
-                        throw new Error("Acceso de lectura para cliente (401)");
-                    }
+            if (resActiva.status === 401 || resHistorial.status === 401) {
+                const hayToken = localStorage.getItem("access_token");
+                if (hayToken) {
+                    console.error("Token expirado o inválido");
+                    window.location.href = "/login";
+                } else {
+                    throw new Error("Acceso de lectura para cliente (401)");
                 }
-                if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
-
-                const dataActiva = await resActiva.json();
-                const dataHistorial: Orden[] = await resHistorial.json();
-
-                setOrdenActiva(Array.isArray(dataActiva) ? (dataActiva[0] || null) : dataActiva);
-                setHistorial(dataHistorial);
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error(String(err)));
-            } finally {
-                setCargando(false);
             }
-        };
+            if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
 
+            const dataActiva = await resActiva.json();
+            const dataHistorial: Orden[] = await resHistorial.json();
+
+            setOrdenActiva(Array.isArray(dataActiva) ? (dataActiva[0] || null) : dataActiva);
+            setHistorial(dataHistorial);
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    useEffect(() => {
         cargarOrdenes();
     }, [idMesa]);
 
-    return { ordenActiva, historial, cargando, error };
+    // 🆕 AHORA SÍ RETORNAMOS EL REFRESH
+    return { ordenActiva, historial, cargando, error, refresh: cargarOrdenes };
 }
 
 export function useDetalleOrden() {
@@ -211,4 +206,51 @@ export function useGuardarOrden() {
 
     useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
     return { guardar, cargando };
+}
+
+export function useMandarACaja() {
+    const [cargando, setCargando] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const mandarACaja = (payload: any, onSuccess: () => void) => {
+        if (cargando) return;
+        setCargando(true);
+
+        const limpiar = () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            WebSocketComedor.off("orden_actualizar", onExito);
+            WebSocketComedor.off("error_actualizar", onError);
+        };
+
+        const onExito = () => { 
+            limpiar(); 
+            setCargando(false); 
+            onSuccess(); 
+        };
+        
+        const onError = (data: any) => { 
+            limpiar(); 
+            setCargando(false); 
+            alert(`Fallo al enviar a caja: ${data.MENSAJE}`); 
+        };
+
+        WebSocketComedor.on("orden_actualizar", onExito);
+        WebSocketComedor.on("error_actualizar", onError);
+
+        // Timeout de seguridad reducido a 15s (suficiente para red local)
+        timeoutRef.current = setTimeout(() => {
+            limpiar(); 
+            setCargando(false); 
+            alert("Timeout de red: La caja no respondió a tiempo.");
+        }, 15000); 
+
+        // Se emite el evento que el backend ya espera para hacer la transferencia
+        WebSocketComedor.emit("guardar_orden", payload);
+    };
+
+    useEffect(() => {
+        return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    }, []);
+
+    return { mandarACaja, cargando };
 }

@@ -7,6 +7,7 @@ export function Indexs() {
     const estadoComedor = useEstado();
     const { numeroMesa } = useMesas();
 
+    
     // PANTALLA: Error o Comedor Cerrado (Adaptado a móvil)
     if (estadoComedor.error != null || estadoComedor.estado?.status === false) {
         return (

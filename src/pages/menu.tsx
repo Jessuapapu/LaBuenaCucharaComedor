@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Interfaces
@@ -8,44 +8,44 @@ import type { Detalles, ComedorOrdenIN } from "../interfaces/comedor";
 import { useMenu } from "../hooks/menu";
 import { useEstado } from "../hooks/estadocomedor";
 import { useOrdenesMesa, useDetalleOrden, useCancelarOrden } from "../hooks/ordenes";
-import { useCrearOrden, useActualizarOrden, useGuardarOrden } from "../hooks/ordenes"
+import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../hooks/ordenes";
 
 // Componentes
 import { MenuDiaGrid } from "../Componentes/menu/gridmenudia";
 import { OrdenActivaTable } from "../Componentes/ordenes/ordenActivaTable";
 import { ModalPlatilloExtra } from "../Componentes/ordenes/modalPlatilloExtra";
 import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles";
-
 import { ModalDialogo } from "../Componentes/ordenes/modalDialogo";
 
+// Sockets
+import { WebSocketComedor } from "../config/socket";
 
 export function MenuMesas() {
+    
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    
+    // 🆕 Importamos el refresh desde el hook corregido
+    const { ordenActiva, historial, cargando, refresh: refreshOrden } = useOrdenesMesa(id);
 
     const estadoComedor = useEstado();
     const menu = useMenu();
-    
-    const { ordenActiva, historial, cargando } = useOrdenesMesa(id);
     const { detallesOrden, cargandoDetalles, obtenerDetalle } = useDetalleOrden();
 
     // Hooks de Websocket
     const { crear, cargando: creando } = useCrearOrden();
     const { actualizar, cargando: actualizando } = useActualizarOrden();
-    const { guardar, cargando: cerrando } = useGuardarOrden();
+    const { mandarACaja, cargando: enviandoCaja } = useMandarACaja(); // 🆕 Nuevo Hook
     const { cancelar, cargando: cancelando } = useCancelarOrden();
     
-    const cargandoAccionWebsocket = creando || actualizando || cerrando || cancelando;
+    const cargandoAccionWebsocket = creando || actualizando || enviandoCaja || cancelando;
 
     const [borrador, setBorrador] = useState<Detalles[]>([]);
-
     const [modalExtraAbierto, setModalExtraAbierto] = useState(false);
     const [modalHistorialAbierto, setModalHistorialAbierto] = useState(false);
-
-    // @ts-ignore
+    //@ts-ignore
     const [idOrdenHistorial, setIdOrdenHistorial] = useState<number | null>(null); 
 
-    // ESTADO PARA EL MODAL DE DIÁLOGO
     const [dialogo, setDialogo] = useState({
         abierto: false,
         tipo: 'info' as 'exito' | 'peligro' | 'info',
@@ -53,7 +53,7 @@ export function MenuMesas() {
         mensaje: '',
         textoConfirmar: 'Aceptar',
         mostrarCancelar: false,
-        accionConfirmar: () => {}
+        accionConfirmar: () => navigate('/mesero')
     });
 
     const cerrarDialogo = () => setDialogo(prev => ({ ...prev, abierto: false }));
@@ -80,13 +80,39 @@ export function MenuMesas() {
         });
     };
 
+    // 🚀 LÓGICA DE ACTUALIZACIÓN ADMIN -> MESERO
+    const ordenActivaRef = useRef(ordenActiva);
+    useEffect(() => {
+        ordenActivaRef.current = ordenActiva;
+    }, [ordenActiva]);
+
+    useEffect(() => {
+        const handleOrdenActualizadaWebsocket = (data: { IdMesa: number }) => {
+            if (Number(data.IdMesa) === Number(id)) {
+                // 1. Recargamos la información principal de la mesa (GET HTTP)
+                if (refreshOrden) refreshOrden();
+                
+                // 2. Extraemos el detalle nuevo
+                const currentOrden = ordenActivaRef.current;
+                if (currentOrden?.IdOrden && obtenerDetalle) {
+                    obtenerDetalle(currentOrden.IdOrden);
+                }
+            }
+        };
+
+        WebSocketComedor.on("orden_actualizada", handleOrdenActualizadaWebsocket);
+        return () => {
+            WebSocketComedor.off("orden_actualizada", handleOrdenActualizadaWebsocket);
+        };
+    }, [id, obtenerDetalle, refreshOrden]);
+
     useEffect(() => {
         if (ordenActiva?.IdOrden) {
             obtenerDetalle(ordenActiva.IdOrden);
         } else {
             setBorrador([]);
         }
-    }, [ordenActiva]);
+    }, [ordenActiva?.IdOrden]);
 
     useEffect(() => {
         if (detallesOrden && ordenActiva) {
@@ -96,7 +122,7 @@ export function MenuMesas() {
                 precio_unitario: d.precio_unitario
             })));
         }
-    }, [detallesOrden, ordenActiva]);
+    }, [detallesOrden, ordenActiva?.IdOrden]);
 
     const agregarAlBorrador = (nombre: string, precio: number, cantidadAdd: number = 1) => {
         setBorrador(prev => {
@@ -129,23 +155,20 @@ export function MenuMesas() {
         const payload = generarPayload();
         
         if (ordenActiva) {
-            // Actualizar: solo mostramos éxito
             actualizar(payload, () => mostrarAlerta("¡Actualizado!", "Los platillos se mandaron a cocina correctamente.", "exito"));
         } else {
-            // Crear: mostramos éxito y recargamos para que detecte la nueva orden activa
             crear(payload, () => mostrarAlerta("¡Orden Enviada!", "El ticket fue abierto exitosamente.", "exito", () => window.location.reload()));
         }
     };
 
-    const manejarTerminarOrden = () => {
+    const manejarMandarACaja = () => {
         if (!ordenActiva) return;
         mostrarConfirmacion(
-            "Cobrar Orden", 
-            "¿La mesa ya ha cancelado la cuenta? Esta acción cerrará el ticket actual.",
+            "Enviar a Caja", 
+            "¿Deseas enviar el ticket a la terminal del Cajero para su facturación y cobro? Esta mesa quedará libre inmediatamente.",
             () => {
-                guardar(generarPayload(), () => {
-                    // Cierra, vacía y te regresa al mapa
-                    mostrarAlerta("Orden Cerrada", "La mesa ahora está libre.", "exito", () => navigate('/'));
+                mandarACaja(generarPayload(), () => {
+                    mostrarAlerta("Transferencia Exitosa", "La cuenta está ahora en Caja. Mesa liberada.", "exito", () => navigate('/mesero'));
                 });
             },
             'info'
@@ -159,8 +182,7 @@ export function MenuMesas() {
             "Estás a punto de cancelar por completo la orden a la cocina. ¿Estás seguro?",
             () => {
                 cancelar(generarPayload(), () => {
-                    // Cancela, vacía y te regresa al mapa
-                    mostrarAlerta("Anulada", "La orden ha sido cancelada y la mesa está libre.", "exito", () => navigate('/'));
+                    mostrarAlerta("Anulada", "La orden ha sido cancelada y la mesa está libre.", "exito", () => navigate('/mesero'));
                 });
             },
             'peligro'
@@ -194,7 +216,7 @@ export function MenuMesas() {
         <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-screen bg-slate-50 pb-32 animate-[fade-in_0.3s_ease-out]">
 
             <div className="flex items-center gap-4 mb-8 pb-4 border-b border-slate-200">
-                <button onClick={() => navigate('/')} className="p-2 bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-100 transition-all">
+                <button onClick={() => navigate('/mesero')} className="p-2 bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-100 transition-all">
                     <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
                 </button>
                 <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 flex-1">Mesa <span className="text-blue-600">#{id}</span></h1>
@@ -207,7 +229,9 @@ export function MenuMesas() {
                 </div>
                 
                 {cargandoDetalles ? (
-                     <div className="bg-white rounded-3xl p-10 flex justify-center border border-slate-200 shadow-sm"><span className="animate-pulse text-blue-500 font-semibold">Cargando ticket de la base de datos...</span></div>
+                     <div className="bg-white rounded-3xl p-10 flex justify-center border border-slate-200 shadow-sm">
+                         <span className="animate-pulse text-blue-500 font-semibold">Cargando ticket de la base de datos...</span>
+                     </div>
                 ) : (
                     <OrdenActivaTable 
                         detalles={borrador}
@@ -215,7 +239,7 @@ export function MenuMesas() {
                         cargandoAccion={cargandoAccionWebsocket}
                         alModificarCantidad={modificarCantidadBorrador}
                         alCrearOActualizar={manejarCrearOActualizar}
-                        alTerminarOrden={manejarTerminarOrden}
+                        alTerminarOrden={manejarMandarACaja}
                         alCancelarOrden={manejarCancelarOrden}
                     />
                 )}
@@ -264,7 +288,7 @@ export function MenuMesas() {
                             >
                                 <div>
                                     <h3 className="font-extrabold text-lg text-slate-700 group-hover:text-blue-600 mb-1">Pedido #{orden.IdOrden}</h3>
-                                    <p className="text-sm text-slate-500">Cobrado/Cerrado</p>
+                                    <p className="text-sm text-slate-500">Enviado a Caja</p>
                                 </div>
                                 <div className="bg-slate-50 p-3 rounded-full group-hover:bg-blue-50">
                                     <svg className="w-5 h-5 text-slate-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>

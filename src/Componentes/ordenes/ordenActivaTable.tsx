@@ -1,4 +1,5 @@
 import type { OrdenActivaTableProps } from "../../interfaces/comedor";
+import { Plus, Minus } from "lucide-react";
 
 export function OrdenActivaTable({ 
     detalles, ordenActivaId, cargandoAccion, 
@@ -46,9 +47,9 @@ export function OrdenActivaTable({
                                 <td className="py-3 font-bold text-slate-700">{item.nombre_platillo}</td>
                                 <td className="py-3 text-center">
                                     <div className="flex items-center justify-center bg-slate-100 rounded-lg p-1 w-max mx-auto">
-                                        <button onClick={() => alModificarCantidad(item.nombre_platillo, -1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-white rounded-md font-black transition-all">-</button>
+                                        <button onClick={() => alModificarCantidad(item.nombre_platillo, -1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-white rounded-md font-black transition-all"><Minus size={14} /></button>
                                         <span className="w-8 font-bold text-slate-800 text-base">{item.cantidad}</span>
-                                        <button onClick={() => alModificarCantidad(item.nombre_platillo, 1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-blue-500 hover:bg-white rounded-md font-black transition-all">+</button>
+                                        <button onClick={() => alModificarCantidad(item.nombre_platillo, 1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-blue-500 hover:bg-white rounded-md font-black transition-all"><Plus size={14} /></button>
                                     </div>
                                 </td>
                                 <td className="py-3 text-right text-slate-500">C${item.precio_unitario}</td>
