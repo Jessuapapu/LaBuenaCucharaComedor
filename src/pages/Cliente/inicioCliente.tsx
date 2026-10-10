@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { useEstado } from '../hooks/estadocomedor';
-import { useMesas } from '../hooks/mesas';
+import { useEstado } from '../../hooks/estadocomedor';
+import { useMesas } from '../../hooks/mesas';
 import { Link } from 'react-router-dom';
 
 export function InicioCliente() {

@@ -2,25 +2,25 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Interfaces
-import type { Detalles, ComedorOrdenIN } from "../interfaces/comedor";
+import type { Detalles, ComedorOrdenIN } from "../../interfaces/comedor";
 
 // Hooks
-import { useMenu } from "../hooks/menu";
-import { useEstado } from "../hooks/estadocomedor";
-import { useOrdenesMesa, useDetalleOrden, useCancelarOrden } from "../hooks/ordenes";
-import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../hooks/ordenes";
+import { useMenu } from "../../hooks/menu";
+import { useEstado } from "../../hooks/estadocomedor";
+import { useOrdenesMesa, useDetalleOrden, useCancelarOrden } from "../../hooks/ordenes";
+import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../../hooks/ordenes";
 
 // Componentes
-import { MenuDiaGrid } from "../Componentes/menu/gridmenudia";
-import { OrdenActivaTable } from "../Componentes/ordenes/ordenActivaTable";
-import { ModalPlatilloExtra } from "../Componentes/ordenes/modalPlatilloExtra";
-import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles";
-import { ModalDialogo } from "../Componentes/ordenes/modalDialogo";
+import { MenuDiaGrid } from "../../Componentes/menu/gridmenudia";
+import { OrdenActivaTable } from "../../Componentes/ordenes/ordenActivaTable";
+import { ModalPlatilloExtra } from "../../Componentes/ordenes/modalPlatilloExtra";
+import { ModalDetalleOrden } from "../../Componentes/ordenes/ModalMostrarDetalles";
+import { ModalDialogo } from "../../Componentes/ordenes/modalDialogo";
 
 // Sockets
-import { WebSocketComedor } from "../config/socket";
+import { WebSocketComedor } from "../../config/socket";
 
-export function MenuMesas() {
+export function MenuMesasMesero() {
     
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -333,4 +333,4 @@ export function MenuMesas() {
     );
 }
 
-export default MenuMesas;
+export default MenuMesasMesero;

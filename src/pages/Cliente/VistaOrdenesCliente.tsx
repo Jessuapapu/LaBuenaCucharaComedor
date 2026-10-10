@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useMenu } from '../hooks/menu'; 
-import { useOrdenesMesa, useDetalleOrden } from '../hooks/ordenes';
-import { useRecargaMesa } from '../hooks/mesasClientes';
-import { CuentaClienteTable } from '../Componentes/ordenes/cuentaTable';
-import { ImagenPlatilloWrapper } from '../Componentes/menu/ImagenPlatilloWrapper'; 
+import { useMenu } from '../../hooks/menu'; 
+import { useOrdenesMesa, useDetalleOrden } from '../../hooks/ordenes';
+import { useRecargaMesa } from '../../hooks/mesasClientes';
+import { CuentaClienteTable } from '../../Componentes/ordenes/cuentaTable';
+import { ImagenPlatilloWrapper } from '../../Componentes/menu/ImagenPlatilloWrapper'; 
 
 export function VistaClienteMesa() {
     const { id } = useParams<{ id: string }>();

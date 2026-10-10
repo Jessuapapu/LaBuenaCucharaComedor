@@ -3,7 +3,7 @@ import { useMesas } from '../hooks/mesas';
 
 import { BotonMesa } from '../Componentes/mesa/mesaComponent';
 
-export function Indexs() {
+export function IndexMesero() {
     const estadoComedor = useEstado();
     const { numeroMesa } = useMesas();
 
@@ -85,4 +85,4 @@ export function Indexs() {
     );
 }
 
-export default Indexs;
+export default IndexMesero;

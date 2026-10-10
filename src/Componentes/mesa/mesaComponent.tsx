@@ -1,30 +1,64 @@
 import { useNavigate } from 'react-router-dom';
 
-interface BotonMesaProps {
+export interface BotonMesaProps {
     id: number | string;
-    estado?: 'libre' | 'ocupada'; 
+    estado?: 'libre' | 'ocupada' | 'reservada';
 }
+
+const UI_ESTADOS = {
+    libre: {
+        borde: 'border-emerald-500/30',
+        fondo: 'bg-emerald-500/5 hover:bg-emerald-500/10',
+        brillo: 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.6)]',
+        texto: 'text-emerald-500',
+        sillas: 'bg-emerald-500/40 group-hover:bg-emerald-500',
+    },
+    ocupada: {
+        borde: 'border-red-500/30',
+        fondo: 'bg-red-500/5 hover:bg-red-500/10',
+        brillo: 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]',
+        texto: 'text-red-500',
+        sillas: 'bg-red-500/40',
+    },
+    reservada: {
+        borde: 'border-amber-500/30',
+        fondo: 'bg-amber-500/5 hover:bg-amber-500/10',
+        brillo: 'bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.6)]',
+        texto: 'text-amber-500',
+        sillas: 'bg-amber-500/40',
+    }
+} as const;
 
 export function BotonMesa({ id, estado = 'libre' }: BotonMesaProps) {
     const navigate = useNavigate();
-
-    const colorMesa = estado === 'libre' ? 'bg-emerald-500 shadow-emerald-500/40' : 'bg-red-500 shadow-red-500/40';
-    const colorSilla = estado === 'libre' ? 'bg-emerald-200' : 'bg-red-200';
+    const ui = UI_ESTADOS[estado] || UI_ESTADOS.libre;
 
     return (
-        <button 
+        <button
             onClick={() => navigate(`/mesa/${id}`)}
-            title={`Ir a la mesa ${id}`}
-            className="relative w-24 h-24 m-4 flex items-center justify-center group focus:outline-none rounded-full transition-all duration-300 ease-out transform hover:-translate-y-1 hover:scale-105"
+            className={`relative group w-32 h-32 m-4 rounded-3xl border-2 backdrop-blur-sm flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${ui.borde} ${ui.fondo}`}
         >
-            <div className={`absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-3 rounded-full ${colorSilla} transition-transform duration-300 group-hover:-translate-y-1`}></div>
-            <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-3 rounded-full ${colorSilla} transition-transform duration-300 group-hover:translate-y-1`}></div>
-            <div className={`absolute top-1/2 -left-1 -translate-y-1/2 w-3 h-8 rounded-full ${colorSilla} transition-transform duration-300 group-hover:-translate-x-1`}></div>
-            <div className={`absolute top-1/2 -right-1 -translate-y-1/2 w-3 h-8 rounded-full ${colorSilla} transition-transform duration-300 group-hover:translate-x-1`}></div>
+            {/* Indicador de estado (Punto brillante tipo LED) */}
+            <div className={`absolute top-4 right-4 w-3 h-3 rounded-full ${ui.brillo} transition-all duration-300 ${estado === 'libre' ? 'animate-pulse' : ''}`} />
+
+            {/* Número de Mesa */}
+            <span className={`text-4xl font-black tracking-tighter transition-colors duration-300 ${ui.texto}`}>
+                {id}
+            </span>
             
-            <div className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-colors duration-300 ${colorMesa}`}>
-                {estado === 'libre' && <div className="absolute inset-0 rounded-full bg-white opacity-20 animate-ping"></div>}
-                <span className="text-white font-extrabold text-2xl drop-shadow-md z-20">{id}</span>
+            {/* Etiqueta de texto (Aparece suavemente al pasar el mouse) */}
+            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                {estado}
+            </span>
+
+            {/* Sillas minimalistas (Líneas integradas en el borde inferior) */}
+            <div className="absolute -bottom-1.5 flex gap-2">
+                {[1, 2, 3, 4].map((silla) => (
+                    <div 
+                        key={silla} 
+                        className={`w-4 h-2.5 rounded-full transition-all duration-300 ${ui.sillas} ${estado === 'libre' ? 'group-hover:-translate-y-1' : ''}`} 
+                    />
+                ))}
             </div>
         </button>
     );
