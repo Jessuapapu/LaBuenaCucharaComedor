@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import { useImagenPlatillo } from "../../hooks/imagenes";
 import type { Props } from "../../interfaces/comedor";
@@ -49,10 +50,25 @@ export function ImagenPlatilloWrapper({ nombrePlatillo, onColorExtracted }: Prop
         return (
             <div className="w-full h-full bg-[#FEC345]/30 animate-pulse flex items-center justify-center">
                 <span className="text-xs text-[#28397F]/60 font-bold">Cargando foto...</span>
+=======
+import { useImagenPlatillo } from "../../hooks/imagenes"; // Ajusta la ruta a donde tengas tu hook
+import type { Props } from "../../interfaces/comedor";
+
+
+export function ImagenPlatilloWrapper({ nombrePlatillo }: Props) {
+
+    const { Urlimagen, cargando, error } = useImagenPlatillo( nombrePlatillo);
+
+    if (cargando) {
+        return (
+            <div className="w-full h-full bg-slate-200 animate-pulse flex items-center justify-center">
+                <span className="text-xs text-slate-400 font-bold">Cargando...</span>
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
             </div>
         );
     }
 
+<<<<<<< HEAD
     if (error || !Urlimagen || imagenFallida) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-[#FFF8E7] text-[#14502E]">
@@ -61,15 +77,26 @@ export function ImagenPlatilloWrapper({ nombrePlatillo, onColorExtracted }: Prop
                     <circle cx="12" cy="12" r="5.5" strokeWidth="1.5" />
                 </svg>
                 <span className="text-[10px] font-semibold">Foto pendiente</span>
+=======
+    if (error || !Urlimagen) {
+        return (
+            <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                <span className="text-[10px] text-slate-400 font-medium text-center px-1">Sin Imagen</span>
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
             </div>
         );
     }
 
+<<<<<<< HEAD
+=======
+    // Retorna la imagen apuntando al string (URL de Supabase) que tu hook devolvió
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
     return (
         <img 
             src={Urlimagen} 
             alt={nombrePlatillo}
             className="w-full h-full object-cover transition-opacity duration-300"
+<<<<<<< HEAD
             onLoad={(e) => {
                 try {
                     const color = extraerColorDominante(e.currentTarget);
@@ -84,3 +111,11 @@ export function ImagenPlatilloWrapper({ nombrePlatillo, onColorExtracted }: Prop
         />
     );
 }
+=======
+            onError={(e) => {
+                e.currentTarget.style.display = 'none';
+            }}
+        />
+    );
+}
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
