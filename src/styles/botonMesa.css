@@ -1,0 +1,71 @@
+/* Contenedor principal del botón */
+.boton-mesa-wrapper {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  margin: 15px;
+}
+
+/* Efecto hover al pasar el mouse */
+.boton-mesa-wrapper:hover {
+  transform: scale(1.1);
+  /* Un brillo sutil rojo/naranja, puedes cambiar el color a tu gusto */
+  filter: drop-shadow(0 8px 12px rgba(230, 57, 70, 0.4)); 
+}
+
+/* Diseño de la Mesa (Madera) */
+.mesa-centro {
+  width: 80px;
+  height: 80px;
+  background-color: #8D6E63; /* Tono madera */
+  border-radius: 20px; /* Bordes redondeados */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: bold;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.3), 0 5px 10px rgba(0,0,0,0.4);
+  border: 3px solid #5D4037; /* Borde oscuro simulando relieve */
+  z-index: 2;
+}
+
+/* Diseño base de las Sillas */
+.silla {
+  position: absolute;
+  background-color: #455A64; /* Tono oscuro para contrastar */
+  border-radius: 10px;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  z-index: 1;
+}
+
+/* Posicionamiento exacto de cada silla */
+.silla-arriba {
+  width: 40px;
+  height: 15px;
+  top: 0;
+}
+
+.silla-abajo {
+  width: 40px;
+  height: 15px;
+  bottom: 0;
+}
+
+.silla-izquierda {
+  width: 15px;
+  height: 40px;
+  left: 0;
+}
+
+.silla-derecha {
+  width: 15px;
+  height: 40px;
+  right: 0;
+}

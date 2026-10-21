@@ -1,0 +1,157 @@
+:root {
+  --primary-color: #e63946;
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-main: #1d3557;
+  --text-muted: #6c757d;
+  --border-radius: 12px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.header, .header-menu {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 24px;
+  text-align: center;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.header h1, .header-menu h2 { margin: 0; font-size: 2rem; }
+.header p, .header-menu p { margin: 5px 0 0; opacity: 0.9; }
+
+/* Botón Volver */
+.btn-volver {
+  position: absolute;
+  left: 20px;
+  top: 30px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid white;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+.btn-volver:hover { background: rgba(255, 255, 255, 0.4); }
+
+/* Pantalla del Index: Grid de Mesas */
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 25px;
+  padding: 0 20px;
+}
+
+.card-mesa {
+  background: var(--card-bg);
+  border: 2px solid #e1e5eb;
+  border-radius: var(--border-radius);
+  padding: 30px 10px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  transition: all 0.2s ease-in-out;
+}
+
+.card-mesa:hover {
+  transform: scale(1.05);
+  border-color: var(--primary-color);
+  box-shadow: 0 6px 12px rgba(230, 57, 70, 0.15);
+}
+
+.mesa-numero {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.card-mesa p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+
+/* Dashboard de Pedidos */
+.main-content {
+  display: flex;
+  gap: 30px;
+  padding: 0 20px;
+  align-items: flex-start;
+}
+
+.menu-grid {
+  flex: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.loading { grid-column: 1 / -1; text-align: center; color: var(--text-muted); font-style: italic; margin-top: 40px; }
+
+.card-platillo {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+}
+
+.platillo-icono { font-size: 3.5rem; margin-bottom: 10px; }
+.card-platillo h3 { margin: 10px 0; font-size: 1.1rem; }
+.precio { color: var(--primary-color); font-weight: bold; margin-bottom: 15px; }
+
+.btn-agregar {
+  background-color: var(--text-main);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+.btn-agregar:hover { background-color: #112233; }
+
+/* Sidebar */
+.carrito-sidebar {
+  flex: 1;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 20px;
+}
+
+.lista-carrito { min-height: 100px; max-height: 300px; overflow-y: auto; margin-bottom: 20px; }
+.carrito-vacio { text-align: center; color: var(--text-muted); }
+
+.item-carrito { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; }
+.item-info { display: flex; flex-direction: column; }
+.item-nombre { font-weight: bold; font-size: 0.95rem; }
+.item-controles { display: flex; align-items: center; gap: 8px; }
+.item-controles button { background: #f1faee; border: 1px solid #a8dadc; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+
+.resumen-orden { border-top: 2px solid #eee; padding-top: 15px; }
+.total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
+
+.btn-confirmar { background-color: var(--primary-color); color: white; border: none; width: 100%; padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
+.btn-confirmar.disabled { background-color: #ccc; cursor: not-allowed; }
+
+.msg-exito { color: #2a9d8f; text-align: center; font-weight: bold; margin-top: 10px; }
+.msg-error { color: var(--primary-color); text-align: center; font-weight: bold; margin-top: 10px; }
