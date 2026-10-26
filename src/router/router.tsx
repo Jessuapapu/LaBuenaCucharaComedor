@@ -11,7 +11,6 @@ import Login from '../pages/Login'; // Ajusta la ruta a donde guardaste el compo
 import { RutaProtegida } from './RutaProtegida'; // Ajusta la ruta
 import { VistaClienteMesa } from '../pages/Cliente/VistaOrdenesCliente';
 import { InicioCliente } from '../pages/Cliente/inicioCliente';
-import Caja from '../pages/Cajero/Caja';
 
 export default function Routess() {
   return createBrowserRouter([
@@ -50,10 +49,6 @@ export default function Routess() {
             {
               path: "/mesa/:id",
               element: <MenuMesasMesero />
-            },
-            {
-              path:'/cajero',
-              element: <Caja />
             }
           ]
         },

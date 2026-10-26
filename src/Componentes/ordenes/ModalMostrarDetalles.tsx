@@ -1,5 +1,9 @@
 import type { ModalDetalleOrdenProps } from '../../interfaces/comedor';
+<<<<<<< HEAD
+import { ImagenPlatilloWrapper } from '../menu/ImagenPlatilloWrapper';
+=======
 import { useImagenPlatillo } from '../../hooks/imagenes';
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
 
 export function ModalDetalleOrden({ 
     abierto, 
@@ -50,6 +54,9 @@ export function ModalDetalleOrden({
                                     
                                     {/* Imagen del platillo consumiendo tu endpoint */}
                                     <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-slate-100 rounded-xl overflow-hidden shadow-inner border border-slate-200">
+<<<<<<< HEAD
+                                        <ImagenPlatilloWrapper nombrePlatillo={item.nombre_platillo} />
+=======
                                         <img 
                                             src={useImagenPlatillo(item.nombre_platillo).Urlimagen} 
                                             alt={item.nombre_platillo}
@@ -59,6 +66,7 @@ export function ModalDetalleOrden({
                                                 e.currentTarget.src = 'https://via.placeholder.com/150?text=Sin+Foto';
                                             }}
                                         />
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
                                     </div>
 
                                     {/* Información del platillo */}
@@ -127,4 +135,8 @@ export function ModalDetalleOrden({
             </div>
         </div>
     );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559

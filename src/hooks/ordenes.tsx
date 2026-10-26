@@ -18,8 +18,8 @@ export function useOrdenesMesa(idMesa: string | undefined) {
         setCargando(true);
         try {
             const [resActiva, resHistorial] = await Promise.all([
-                fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/true`),
-                fetch(`${API_BASE_URL}/comedor/mesa/${idMesa}/false`)
+                fetch(`${API_BASE_URL}/comedor/${idMesa}/true`),
+                fetch(`${API_BASE_URL}/comedor/${idMesa}/false`)
             ]);
 
             if (resActiva.status === 401 || resHistorial.status === 401) {
@@ -61,7 +61,7 @@ export function useDetalleOrden() {
         setCargandoDetalles(true);
         setDetallesOrden([]);
         try {
-            const res = await fetch(`${API_BASE_URL}/ordenes/detalle/?IdPedido=${idOrden}`);
+            const res = await fetch(`${API_BASE_URL}/comedor/detalle/${idOrden}`);
 
             const data: Detalles[] = await res.json();
             setDetallesOrden(data);
