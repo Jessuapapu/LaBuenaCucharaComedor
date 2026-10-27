@@ -1,6 +1,7 @@
 export interface ComedorOrdenIN {
     IdMesa: number;
     Detalles: Detalles[];
+    Mesero: string;
 }
 
 export interface   Detalles {

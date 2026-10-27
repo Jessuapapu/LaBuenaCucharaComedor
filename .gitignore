@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
+=======
+*.env
+.env
+>>>>>>> a559087 (feat(vibracion mesero): se implmento vibracion al momento de actualizar la mesa)

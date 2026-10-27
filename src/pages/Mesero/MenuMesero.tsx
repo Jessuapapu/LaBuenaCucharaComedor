@@ -2,25 +2,27 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Interfaces
-import type { Detalles, ComedorOrdenIN } from "../interfaces/comedor";
+import type { Detalles, ComedorOrdenIN } from "../../interfaces/comedor";
 
 // Hooks
-import { useMenu } from "../hooks/menu";
-import { useEstado } from "../hooks/estadocomedor";
-import { useOrdenesMesa, useDetalleOrden, useCancelarOrden } from "../hooks/ordenes";
-import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../hooks/ordenes";
+import { useMenu } from "../../hooks/menu";
+import { useEstado } from "../../hooks/estadocomedor";
+import { useOrdenesMesa, useDetalleOrden, useCancelarOrden } from "../../hooks/ordenes";
+import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../../hooks/ordenes";
 
 // Componentes
-import { MenuDiaGrid } from "../Componentes/menu/gridmenudia";
-import { OrdenActivaTable } from "../Componentes/ordenes/ordenActivaTable";
-import { ModalPlatilloExtra } from "../Componentes/ordenes/modalPlatilloExtra";
-import { ModalDetalleOrden } from "../Componentes/ordenes/ModalMostrarDetalles";
-import { ModalDialogo } from "../Componentes/ordenes/modalDialogo";
+import { MenuDiaGrid } from "../../Componentes/menu/gridmenudia";
+import { OrdenActivaTable } from "../../Componentes/ordenes/ordenActivaTable";
+import { ModalPlatilloExtra } from "../../Componentes/ordenes/modalPlatilloExtra";
+import { ModalDetalleOrden } from "../../Componentes/ordenes/ModalMostrarDetalles";
+import { ModalDialogo } from "../../Componentes/ordenes/modalDialogo";
 
 // Sockets
-import { WebSocketComedor } from "../config/socket";
+import { WebSocketComedor } from "../../config/socket";
 
-export function MenuMesas() {
+// Notificaciones
+import { triggerWaiterAlert } from "../../utils/Notificaciones";
+export function MenuMesasMesero() {
     
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -45,6 +47,10 @@ export function MenuMesas() {
     const [modalHistorialAbierto, setModalHistorialAbierto] = useState(false);
     //@ts-ignore
     const [idOrdenHistorial, setIdOrdenHistorial] = useState<number | null>(null); 
+
+    const usuario = localStorage.getItem('user_info')
+    //@ts-ignore
+    const User = JSON.parse(usuario)['username']
 
     const [dialogo, setDialogo] = useState({
         abierto: false,
@@ -87,15 +93,19 @@ export function MenuMesas() {
     }, [ordenActiva]);
 
     useEffect(() => {
-        const handleOrdenActualizadaWebsocket = (data: { IdMesa: number }) => {
+        const handleOrdenActualizadaWebsocket = (data: { IdMesa: number, Mesero: string }) => {
             if (Number(data.IdMesa) === Number(id)) {
                 // 1. Recargamos la información principal de la mesa (GET HTTP)
                 if (refreshOrden) refreshOrden();
-                
+                 console.log(data)
                 // 2. Extraemos el detalle nuevo
                 const currentOrden = ordenActivaRef.current;
                 if (currentOrden?.IdOrden && obtenerDetalle) {
                     obtenerDetalle(currentOrden.IdOrden);
+                    if (data.Mesero === User){
+                        triggerWaiterAlert(`Mesa ${data.IdMesa}`,'Orden Actualizada')
+                        console.log('debio vibrar')
+                    }
                 }
             }
         };
@@ -147,11 +157,13 @@ export function MenuMesas() {
 
     const generarPayload = (): ComedorOrdenIN => ({
         IdMesa: Number(id),
-        Detalles: borrador
+        Detalles: borrador,
+        Mesero: User
     });
 
     const manejarCrearOActualizar = () => {
         if (borrador.length === 0) return;
+        console.log(User)
         const payload = generarPayload();
         
         if (ordenActiva) {
@@ -213,7 +225,7 @@ export function MenuMesas() {
     }
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen bg-slate-50 pb-32 animate-[fade-in_0.3s_ease-out]">
+        <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-screen bg-slate-50 pb-32 animate-[fade-in_0.3s_ease-out]">
 
             <div className="flex items-center gap-4 mb-8 pb-4 border-b border-slate-200">
                 <button onClick={() => navigate('/mesero')} className="p-2 bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-100 transition-all">
@@ -333,4 +345,4 @@ export function MenuMesas() {
     );
 }
 
-export default MenuMesas;
+export default MenuMesasMesero;

@@ -37,7 +37,7 @@ export function InicioCliente() {
 
             {/* Cabecera Premium */}
             <header className="relative z-10 pt-16 pb-10 px-6 text-center">
-                <p className="text-[#B71F30] font-black tracking-[0.2em] text-sm md:text-base uppercase mb-3">Bienvenidos a</p>
+                <p className="text-[#ffffff] font-black tracking-[0.2em] text-sm md:text-base uppercase mb-3">Bienvenidos a</p>
                 <h1 className="text-5xl md:text-6xl font-black text-[#28397F] mb-4 tracking-tight">La Buena Cuchara</h1>
                 <p className="text-[#14502E] font-medium text-lg">Selecciona tu mesa para ver el menú</p>
             </header>

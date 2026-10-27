@@ -1,9 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 // Importas tus vistas (páginas)
-import Indexs from '../pages/Index';
+import { IndexMesero } from '../pages/IndexMesero';
 import Layout from '../pages/layout';
-import { MenuMesas } from '../pages/menu';
+import { MenuMesasMesero } from '../pages/Mesero/MenuMesero';
 
 
 // 1. Importas el Login y el Guardián
@@ -11,6 +11,7 @@ import Login from '../pages/Login'; // Ajusta la ruta a donde guardaste el compo
 import { RutaProtegida } from './RutaProtegida'; // Ajusta la ruta
 import { VistaClienteMesa } from '../pages/ordenesCliente';
 import { InicioCliente } from '../pages/inicioCliente';
+import Caja from '../pages/Cocina/Caja';
 
 export default function Routess() {
   return createBrowserRouter([
@@ -44,11 +45,15 @@ export default function Routess() {
           children: [
             {
               path: "/mesero",
-              element: <Indexs />
+              element: <IndexMesero/>
             },
             {
               path: "/mesa/:id",
-              element: <MenuMesas />
+              element: <MenuMesasMesero />
+            },
+            {
+              path:'/cajero',
+              element: <Caja />
             }
           ]
         },
