@@ -1,6 +1,7 @@
 export interface ComedorOrdenIN {
     IdMesa: number;
     Detalles: Detalles[];
+    Mesero: string;
 }
 
 export interface   Detalles {
@@ -107,13 +108,6 @@ export interface CuentaClienteProps {
 }
 
 export interface Props {
-<<<<<<< HEAD
-    idPlatillo?: number;
-    nombrePlatillo: string;
-    onColorExtracted?: (color: string) => void;
-}
-=======
     idPlatillo: number;
     nombrePlatillo: string;
 }
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559

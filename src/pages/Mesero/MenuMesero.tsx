@@ -20,6 +20,8 @@ import { ModalDialogo } from "../../Componentes/ordenes/modalDialogo";
 // Sockets
 import { WebSocketComedor } from "../../config/socket";
 
+// Notificaciones
+import { triggerWaiterAlert } from "../../utils/Notificaciones";
 export function MenuMesasMesero() {
     
     const { id } = useParams<{ id: string }>();
@@ -45,6 +47,10 @@ export function MenuMesasMesero() {
     const [modalHistorialAbierto, setModalHistorialAbierto] = useState(false);
     //@ts-ignore
     const [idOrdenHistorial, setIdOrdenHistorial] = useState<number | null>(null); 
+
+    const usuario = localStorage.getItem('user_info')
+    //@ts-ignore
+    const User = JSON.parse(usuario)['username']
 
     const [dialogo, setDialogo] = useState({
         abierto: false,
@@ -87,15 +93,19 @@ export function MenuMesasMesero() {
     }, [ordenActiva]);
 
     useEffect(() => {
-        const handleOrdenActualizadaWebsocket = (data: { IdMesa: number }) => {
+        const handleOrdenActualizadaWebsocket = (data: { IdMesa: number, Mesero: string }) => {
             if (Number(data.IdMesa) === Number(id)) {
                 // 1. Recargamos la información principal de la mesa (GET HTTP)
                 if (refreshOrden) refreshOrden();
-                
+                 console.log(data)
                 // 2. Extraemos el detalle nuevo
                 const currentOrden = ordenActivaRef.current;
                 if (currentOrden?.IdOrden && obtenerDetalle) {
                     obtenerDetalle(currentOrden.IdOrden);
+                    if (data.Mesero === User){
+                        triggerWaiterAlert(`Mesa ${data.IdMesa}`,'Orden Actualizada')
+                        console.log('debio vibrar')
+                    }
                 }
             }
         };
@@ -147,11 +157,13 @@ export function MenuMesasMesero() {
 
     const generarPayload = (): ComedorOrdenIN => ({
         IdMesa: Number(id),
-        Detalles: borrador
+        Detalles: borrador,
+        Mesero: User
     });
 
     const manejarCrearOActualizar = () => {
         if (borrador.length === 0) return;
+        console.log(User)
         const payload = generarPayload();
         
         if (ordenActiva) {
