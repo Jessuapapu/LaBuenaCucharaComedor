@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 const UrlApi = import.meta.env.VITE_URL_API;
 
 
-<<<<<<< HEAD
 function obtenerUrlImagen(data: unknown): string {
   const registro = Array.isArray(data) ? data[0] : data;
   const objeto = registro && typeof registro === "object" ? registro as Record<string, unknown> : null;
@@ -22,16 +21,11 @@ function obtenerUrlImagen(data: unknown): string {
 }
 
 export function useImagenPlatillo(NombrePlatillo: string | null = null) {
-=======
-
-export function useImagenPlatillo( NombrePlatillo: string | null = null) {
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
   const [Urlimagen, setImagen] = useState("");
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-<<<<<<< HEAD
     const controlador = new AbortController();
 
     const obtenerImagen = async () => {
@@ -54,18 +48,11 @@ export function useImagenPlatillo( NombrePlatillo: string | null = null) {
         const respuesta = await fetch(`${apiBase}/imagenes/?${parametros.toString()}`, {
           signal: controlador.signal,
         });
-=======
-    const obtenerImagen = async () => {
-      try {
-       
-        const respuesta = await fetch(`${UrlApi}/imagenes/?NombrePlatillo=${NombrePlatillo}&NumeroImagen=1`);
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
 
         if (!respuesta.ok) {
           throw new Error(`HTTP error! status: ${respuesta.status}`);
         }
 
-<<<<<<< HEAD
         const data: unknown = await respuesta.json();
         const url = obtenerUrlImagen(data);
         const urlImagen = /^(https?:|data:|blob:)/i.test(url)
@@ -80,29 +67,12 @@ export function useImagenPlatillo( NombrePlatillo: string | null = null) {
         setError(mensaje);
       } finally {
         if (!controlador.signal.aborted) setCargando(false);
-=======
-        const data = await respuesta.json();
-        setImagen(data);
-
-      } catch (err: any) {
-        console.error("Error al obtener el menú:", err);
-        setError(err.message);
-      } finally {
-        setCargando(false);
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
       }
     };
 
     obtenerImagen();
-<<<<<<< HEAD
     return () => controlador.abort();
   }, [NombrePlatillo]);
 
   return { Urlimagen, cargando, error };
 }
-=======
-  }, []);
-
-  return { Urlimagen, cargando, error };
-}
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559

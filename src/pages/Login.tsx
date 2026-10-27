@@ -51,20 +51,12 @@ export default function Login() {
     };
 
     return (
-<<<<<<< HEAD
         <div className="min-h-screen bg-[#FFF8E7] flex items-center justify-center p-4">
-=======
-        <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
             <div className="max-w-md w-full bg-white rounded-[2rem] shadow-xl p-8">
                 
                 {/* Cabecera del Login */}
                 <div className="text-center mb-8">
-<<<<<<< HEAD
                         <div className="w-16 h-16 bg-[#28397F]/10 text-[#28397F] rounded-2xl flex items-center justify-center mx-auto mb-4">
-=======
-                    <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" /></svg>
                     </div>
                     <h2 className="text-2xl font-black text-slate-800">Acceso Staff</h2>
@@ -87,11 +79,7 @@ export default function Login() {
                             required
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-<<<<<<< HEAD
                             className="w-full bg-[#FFF8E7] border border-[#FEC345]/70 text-[#28397F] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#28397F] focus:bg-white transition-all font-medium"
-=======
-                            className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
                             placeholder="Ej. jessua"
                         />
                     </div>
@@ -103,11 +91,7 @@ export default function Login() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-<<<<<<< HEAD
                             className="w-full bg-[#FFF8E7] border border-[#FEC345]/70 text-[#28397F] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#28397F] focus:bg-white transition-all font-medium"
-=======
-                            className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
                             placeholder="••••••••"
                         />
                     </div>
@@ -115,11 +99,7 @@ export default function Login() {
                     <button 
                         type="submit" 
                         disabled={cargando}
-<<<<<<< HEAD
                         className="w-full bg-[#28397F] text-white font-black py-4 rounded-xl shadow-[0_8px_20px_rgba(40,57,127,0.3)] hover:bg-[#B71F30] hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 mt-4"
-=======
-                        className="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 mt-4"
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
                     >
                         {cargando ? 'Verificando...' : 'Iniciar Sesión'}
                     </button>
@@ -128,8 +108,4 @@ export default function Login() {
             </div>
         </div>
     );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3002aa87c52a9a7d0bc3f60f4adf25520aee2559
