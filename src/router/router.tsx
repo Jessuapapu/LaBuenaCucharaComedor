@@ -6,6 +6,7 @@ import Layout from '../pages/layout';
 import { MenuMesasMesero } from '../pages/Mesero/MenuMesero';
 
 
+
 // 1. Importas el Login y el Guardián
 import Login from '../pages/Login'; // Ajusta la ruta a donde guardaste el componente
 import { RutaProtegida } from './RutaProtegida'; // Ajusta la ruta
@@ -50,6 +51,10 @@ export default function Routess() {
             {
               path: "/mesa/:id",
               element: <MenuMesasMesero />
+            },
+            {
+              path:'/cajero',
+              element: <Caja />
             },
             {
               path:'/cajero',
