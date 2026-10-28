@@ -7,6 +7,28 @@ import { useRecargaMesa } from '../hooks/mesasClientes';
 import { CuentaClienteTable } from '../Componentes/ordenes/cuentaTable';
 import { ImagenPlatilloWrapper } from '../Componentes/menu/ImagenPlatilloWrapper'; 
 
+type CategoriaMenu = 'Todo' | 'Comidas' | 'Bebidas' | 'Postres';
+
+function obtenerCategoriaPlatillo(platillo: Platillo): Exclude<CategoriaMenu, 'Todo'> {
+    const datos = platillo as Platillo & Record<string, unknown>;
+    const categoriaOriginal = [datos.Categoria, datos.categoria, datos.NombreCategoria, datos.nombre_categoria, datos.tipo]
+        .find((valor): valor is string => typeof valor === 'string' && valor.trim().length > 0);
+    const normalizar = (texto: string) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const categoria = normalizar(categoriaOriginal ?? '');
+
+    if (categoria.includes('bebida')) return 'Bebidas';
+    if (categoria.includes('postre') || categoria.includes('dulce')) return 'Postres';
+    if (categoria.includes('comida') || categoria.includes('platillo')) return 'Comidas';
+
+    const nombre = normalizar(platillo.NombrePlatillo);
+    const palabrasBebida = ['agua', 'batido', 'cafe', 'chicha', 'fresco', 'gaseosa', 'horchata', 'jugo', 'limonada', 'licuado', 'refresco', 'soda', 'te ', 'bebida'];
+    const palabrasPostre = ['arroz con leche', 'dulce', 'flan', 'gelatina', 'helado', 'pastel', 'pie ', 'postre', 'quesillo', 'torta', 'tres leches'];
+
+    if (palabrasBebida.some((palabra) => nombre.includes(palabra))) return 'Bebidas';
+    if (palabrasPostre.some((palabra) => nombre.includes(palabra))) return 'Postres';
+    return 'Comidas';
+}
+
 function TarjetaPlatilloCliente({ platillo }: { platillo: Platillo }) {
     const [colorDominante, setColorDominante] = useState("#FEC345");
     const guardarColor = useCallback((color: string) => setColorDominante(color), []);
@@ -14,20 +36,21 @@ function TarjetaPlatilloCliente({ platillo }: { platillo: Platillo }) {
 
     return (
         <article
-            className="relative mt-16 flex min-h-[300px] flex-col items-center justify-end rounded-[2rem] border border-[#28397F]/10 px-5 pb-6 pt-32 text-center shadow-lg shadow-[#28397F]/10"
+            className="relative mt-16 flex min-h-[300px] flex-col items-center justify-end rounded-[2rem] border border-[#28397F]/10 px-5 pb-6 pt-32 text-center shadow-lg shadow-[#28397F]/10 max-sm:mt-10 max-sm:min-h-[150px] max-sm:rounded-2xl max-sm:px-2 max-sm:pb-3 max-sm:pt-12"
             style={{ backgroundColor: `color-mix(in srgb, ${colorDominante} 12%, #FFF8E7)` }}
         >
-            <div className="absolute -top-14 left-1/2 h-48 w-48 -translate-x-1/2 overflow-hidden rounded-full border-4 border-white ring-8 ring-[#FFF8E7] shadow-xl sm:h-56 sm:w-56">
+            <div className="absolute -top-14 left-1/2 h-48 w-48 -translate-x-1/2 overflow-hidden rounded-full border-4 border-white ring-8 ring-[#FFF8E7] shadow-xl sm:h-56 sm:w-56 max-sm:-top-8 max-sm:h-20 max-sm:w-20 max-sm:border-2 max-sm:ring-4">
                 <ImagenPlatilloWrapper nombrePlatillo={platillo.NombrePlatillo} onColorExtracted={guardarColor} />
             </div>
-            <h3 className="line-clamp-2 text-2xl font-extrabold leading-tight text-[#28397F] sm:text-3xl">{platillo.NombrePlatillo}</h3>
-            <p className="mt-3 text-2xl font-black text-[#14502E] sm:text-3xl">C$ {precio.toFixed(2)}</p>
+            <h3 className="line-clamp-2 text-2xl font-extrabold leading-tight text-[#28397F] sm:text-3xl max-sm:text-xs max-sm:leading-tight">{platillo.NombrePlatillo}</h3>
+            <p className="mt-3 text-2xl font-black text-[#14502E] sm:text-3xl max-sm:mt-1 max-sm:text-sm">C$ {precio.toFixed(2)}</p>
         </article>
     );
 }
 
 export function VistaClienteMesa() {
     const { id } = useParams<{ id: string }>();
+    const [categoriaActiva, setCategoriaActiva] = useState<CategoriaMenu>('Todo');
 
     // 1. Hooks de datos HTTP
     const { menu, cargando: cargandoMenu } = useMenu();
@@ -54,6 +77,10 @@ export function VistaClienteMesa() {
     }
 
     const tieneOrden = Boolean(ordenActiva?.IdOrden);
+    const categorias: CategoriaMenu[] = ['Todo', 'Comidas', 'Bebidas', 'Postres'];
+    const menuFiltrado = categoriaActiva === 'Todo'
+        ? menu
+        : menu.filter((platillo) => obtenerCategoriaPlatillo(platillo) === categoriaActiva);
 
     return (
         <div className="min-h-screen bg-[#FFF8E7] pb-24 font-sans">
@@ -104,18 +131,38 @@ export function VistaClienteMesa() {
                 )}
 
                 <section className="pt-4">
-                    <div className="flex items-end justify-between mb-8">
+                    <div className="mb-5 flex items-end justify-between sm:mb-8">
                         <div>
                             <h2 className="text-3xl font-black text-slate-800 tracking-tight">Menú</h2>
                             <p className="text-slate-500 font-medium mt-1">Especialidades del día</p>
                         </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 gap-x-5 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-                        {menu.map((platillo) => (
-                            <TarjetaPlatilloCliente key={platillo.id} platillo={platillo} />
+
+                    <div className="mb-7 flex w-full items-center gap-1 overflow-x-auto rounded-full border border-[#9DA968]/30 bg-[#9DA968]/15 p-1.5 sm:w-fit sm:gap-2 sm:p-2" role="group" aria-label="Filtrar menú por categoría">
+                        {categorias.map((categoria) => (
+                            <button
+                                key={categoria}
+                                type="button"
+                                onClick={() => setCategoriaActiva(categoria)}
+                                aria-pressed={categoriaActiva === categoria}
+                                className={`shrink-0 rounded-full px-3 py-2 text-xs font-bold transition-colors sm:px-5 sm:text-sm ${categoriaActiva === categoria ? 'bg-[#14502E] text-[#FFF8E7] shadow-sm' : 'text-[#28397F] hover:bg-[#FFF8E7]/80'}`}
+                            >
+                                {categoria}
+                            </button>
                         ))}
                     </div>
+                    
+                    {menuFiltrado.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-x-3 gap-y-12 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-16 lg:grid-cols-3">
+                            {menuFiltrado.map((platillo) => (
+                                <TarjetaPlatilloCliente key={platillo.id} platillo={platillo} />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="rounded-2xl border border-[#9DA968]/35 bg-[#FFFDF7]/80 px-5 py-8 text-center font-medium text-[#28397F]">
+                            No hay platillos en esta categoría por ahora.
+                        </p>
+                    )}
                 </section>
                 <div className="h-10"></div>
             </main>
