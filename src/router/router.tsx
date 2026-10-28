@@ -5,14 +5,13 @@ import { IndexMesero } from '../pages/IndexMesero';
 import Layout from '../pages/layout';
 import { MenuMesasMesero } from '../pages/Mesero/MenuMesero';
 
-
-
 // 1. Importas el Login y el Guardián
 import Login from '../pages/Login'; // Ajusta la ruta a donde guardaste el componente
 import { RutaProtegida } from './RutaProtegida'; // Ajusta la ruta
 import { VistaClienteMesa } from '../pages/ordenesCliente';
 import { InicioCliente } from '../pages/inicioCliente';
-import Caja from '../pages/Cocina/Caja';
+import Caja from '../pages/Cajero/Caja';
+import { IndexCocina } from '../pages/Cocina/Cocina';
 
 export default function Routess() {
   return createBrowserRouter([
@@ -57,8 +56,8 @@ export default function Routess() {
               element: <Caja />
             },
             {
-              path:'/cajero',
-              element: <Caja />
+              path:'/cocina',
+              element: <IndexCocina />
             }
           ]
         },
