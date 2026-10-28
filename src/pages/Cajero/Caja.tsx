@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Lock, CreditCard, Loader2, Eye, Undo2, MonitorSpeaker } from 'lucide-react';
+import { ArrowLeft, Lock, CreditCard, Loader2, Eye, Undo2, MonitorSpeaker } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useCaja, apiCaja } from '../../hooks/caja';
 import { ModalCobro } from './modals/ModalCobro';
 import { ModalReembolso } from './modals/ModalReembolso';
@@ -44,6 +45,13 @@ export default function Caja() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
+            <Link
+                to="/mesero"
+                className="inline-flex w-fit items-center gap-2 rounded-xl border border-[#9DA968]/40 bg-[#FFF8E7] px-4 py-2.5 font-bold text-[#14502E] shadow-sm transition hover:bg-white hover:shadow-md"
+            >
+                <ArrowLeft size={18} aria-hidden="true" />
+                Volver a mesas
+            </Link>
             
             {/* ENCABEZADO PRINCIPAL */}
             <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
