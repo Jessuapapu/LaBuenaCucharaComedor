@@ -129,7 +129,8 @@ export function MenuMesasMesero() {
             setBorrador(detallesOrden.map(d => ({
                 nombre_platillo: d.nombre_platillo,
                 cantidad: d.cantidad,
-                precio_unitario: d.precio_unitario
+                precio_unitario: d.precio_unitario,
+                notas: d.notas ?? ''
             })));
         }
     }, [detallesOrden, ordenActiva?.IdOrden]);
@@ -142,8 +143,14 @@ export function MenuMesasMesero() {
                     p.nombre_platillo === nombre ? { ...p, cantidad: p.cantidad + cantidadAdd } : p
                 );
             }
-            return [...prev, { nombre_platillo: nombre, precio_unitario: precio, cantidad: cantidadAdd }];
+            return [...prev, { nombre_platillo: nombre, precio_unitario: precio, cantidad: cantidadAdd, notas: '' }];
         });
+    };
+
+    const cambiarNotasBorrador = (nombre: string, notas: string) => {
+        setBorrador(prev => prev.map(item =>
+            item.nombre_platillo === nombre ? { ...item, notas } : item
+        ));
     };
 
     const modificarCantidadBorrador = (nombre: string, delta: number) => {
@@ -157,7 +164,7 @@ export function MenuMesasMesero() {
 
     const generarPayload = (): ComedorOrdenIN => ({
         IdMesa: Number(id),
-        Detalles: borrador,
+        Detalles: borrador.map(item => ({ ...item, notas: item.notas?.trim() ?? '' })),
         Mesero: User
     });
 
@@ -231,13 +238,13 @@ export function MenuMesasMesero() {
                 <button onClick={() => navigate('/mesero')} className="p-2 bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-100 transition-all">
                     <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
                 </button>
-                <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 flex-1">Mesa <span className="text-blue-600">#{id}</span></h1>
+                <h1 className="text-4xl md:text-4xl font-extrabold text-slate-800 flex-1">Mesa <span className="text-blue-600">#{id}</span></h1>
             </div>
 
             <div className="mb-12">
                 <div className="flex items-center gap-2 mb-4">
                     <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
-                    <h2 className="text-lg font-bold text-slate-700 uppercase tracking-widest">Orden Activa</h2>
+                    <h2 className="text-xl sm:text-lg font-bold text-slate-700 uppercase tracking-widest">Orden Activa</h2>
                 </div>
                 
                 {cargandoDetalles ? (
@@ -250,6 +257,7 @@ export function MenuMesasMesero() {
                         ordenActivaId={ordenActiva ? ordenActiva.IdOrden : null}
                         cargandoAccion={cargandoAccionWebsocket}
                         alModificarCantidad={modificarCantidadBorrador}
+                        alCambiarNotas={cambiarNotasBorrador}
                         alCrearOActualizar={manejarCrearOActualizar}
                         alTerminarOrden={manejarMandarACaja}
                         alCancelarOrden={manejarCancelarOrden}
@@ -261,12 +269,12 @@ export function MenuMesasMesero() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-6 bg-emerald-500 rounded-full"></div>
-                        <h2 className="text-lg font-bold text-slate-700 uppercase tracking-widest">Menú del Día</h2>
+                        <h2 className="text-xl sm:text-lg font-bold text-slate-700 uppercase tracking-widest">Menú del Día</h2>
                     </div>
                     
                     <button 
                         onClick={() => setModalExtraAbierto(true)}
-                        className="bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 font-bold py-2 px-4 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto"
+                        className="bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 font-bold py-3 px-4 rounded-xl text-base sm:py-2 sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         Buscar Platillo Extra
@@ -283,7 +291,7 @@ export function MenuMesasMesero() {
             <div>
                 <div className="flex items-center gap-2 mb-4">
                     <div className="w-2 h-6 bg-slate-300 rounded-full"></div>
-                    <h2 className="text-lg font-bold text-slate-700 uppercase tracking-widest">Historial de Turno</h2>
+                    <h2 className="text-xl sm:text-lg font-bold text-slate-700 uppercase tracking-widest">Historial de Turno</h2>
                 </div>
 
                 {historial && historial.length > 0 ? (

@@ -3,7 +3,7 @@ import { Plus, Minus } from "lucide-react";
 
 export function OrdenActivaTable({ 
     detalles, ordenActivaId, cargandoAccion, 
-    alModificarCantidad, alCrearOActualizar, alTerminarOrden, alCancelarOrden 
+    alModificarCantidad, alCambiarNotas, alCrearOActualizar, alTerminarOrden, alCancelarOrden 
 }: OrdenActivaTableProps) {
     
     const total = detalles.reduce((acc, item) => acc + (item.cantidad * item.precio_unitario), 0);
@@ -31,7 +31,7 @@ export function OrdenActivaTable({
                 </div>
             </div>
 
-            <div className="p-6 overflow-x-auto">
+            <div className="hidden overflow-x-auto p-6 md:block">
                 <table className="w-full text-left border-collapse min-w-[500px]">
                     <thead>
                         <tr className="border-b border-slate-200 text-slate-400 text-xs uppercase tracking-wider">
@@ -44,7 +44,19 @@ export function OrdenActivaTable({
                     <tbody className="divide-y divide-slate-100">
                         {detalles.map((item, idx) => (
                             <tr key={idx} className="text-sm hover:bg-slate-50 transition-colors">
-                                <td className="py-3 font-bold text-slate-700">{item.nombre_platillo}</td>
+                                <td className="py-3 pr-4 font-bold text-slate-700">
+                                    <p>{item.nombre_platillo}</p>
+                                    <label className="mt-2 block text-xs font-bold uppercase tracking-wide text-slate-400">
+                                        Nota para cocina
+                                        <textarea
+                                            value={item.notas ?? ''}
+                                            onChange={(event) => alCambiarNotas(item.nombre_platillo, event.target.value)}
+                                            placeholder="Ej. sin cebolla, salsa aparte"
+                                            rows={2}
+                                            className="mt-1 block w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium normal-case tracking-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                        />
+                                    </label>
+                                </td>
                                 <td className="py-3 text-center">
                                     <div className="flex items-center justify-center bg-slate-100 rounded-lg p-1 w-max mx-auto">
                                         <button onClick={() => alModificarCantidad(item.nombre_platillo, -1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-white rounded-md font-black transition-all"><Minus size={14} /></button>
@@ -60,9 +72,41 @@ export function OrdenActivaTable({
                 </table>
             </div>
 
+            <div className="space-y-4 p-4 md:hidden">
+                {detalles.map((item, idx) => (
+                    <article key={`${item.nombre_platillo}-${idx}`} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                        <div className="mb-4 flex items-start justify-between gap-3">
+                            <div>
+                                <h3 className="text-lg font-extrabold leading-snug text-slate-800">{item.nombre_platillo}</h3>
+                                <p className="mt-1 text-base font-semibold text-slate-500">C${item.precio_unitario} c/u</p>
+                            </div>
+                            <p className="shrink-0 text-lg font-black text-slate-800">C${(item.cantidad * item.precio_unitario).toFixed(2)}</p>
+                        </div>
+                        <label className="block text-sm font-bold text-slate-600">
+                            Nota para cocina
+                            <textarea
+                                value={item.notas ?? ''}
+                                onChange={(event) => alCambiarNotas(item.nombre_platillo, event.target.value)}
+                                placeholder="Ej. sin cebolla, salsa aparte"
+                                rows={2}
+                                className="mt-1.5 block w-full resize-y rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-base font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                            />
+                        </label>
+                        <div className="mt-4 flex items-center justify-between">
+                            <span className="text-base font-bold text-slate-600">Cantidad</span>
+                            <div className="flex items-center gap-2 rounded-xl bg-white p-1 shadow-sm ring-1 ring-slate-200">
+                                <button onClick={() => alModificarCantidad(item.nombre_platillo, -1)} aria-label={`Quitar una unidad de ${item.nombre_platillo}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-600 transition hover:bg-red-50 hover:text-red-600"><Minus size={19} /></button>
+                                <span className="w-8 text-center text-lg font-extrabold text-slate-800">{item.cantidad}</span>
+                                <button onClick={() => alModificarCantidad(item.nombre_platillo, 1)} aria-label={`Añadir una unidad de ${item.nombre_platillo}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-600 transition hover:bg-blue-50 hover:text-blue-600"><Plus size={19} /></button>
+                            </div>
+                        </div>
+                    </article>
+                ))}
+            </div>
+
             <div className="bg-slate-50 p-6 border-t border-slate-200">
                 <div className="flex justify-between items-center mb-6">
-                    <span className="font-bold text-slate-400 uppercase tracking-widest text-sm">Total Parcial:</span>
+                    <span className="font-bold text-slate-500 uppercase tracking-widest text-base sm:text-sm">Total Parcial:</span>
                     <span className="font-black text-3xl text-blue-600">C${total.toFixed(2)}</span>
                 </div>
                 
@@ -70,7 +114,7 @@ export function OrdenActivaTable({
                     <button 
                         onClick={alCrearOActualizar}
                         disabled={cargandoAccion || detalles.length === 0}
-                        className="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-blue-600 text-white font-black text-lg py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {cargandoAccion ? 'Procesando...' : (ordenActivaId ? 'Guardar Cambios' : 'Enviar Nueva Orden')}
                     </button>

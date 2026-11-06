@@ -16,12 +16,12 @@ function TarjetaPlatilloMesero({ platillo, alAgregar }: { platillo: Platillo; al
                 <ImagenPlatilloWrapper nombrePlatillo={platillo.NombrePlatillo} onColorExtracted={guardarColor} />
             </div>
             <div className="mb-4">
-                <h3 className="line-clamp-2 text-xl font-extrabold leading-tight text-[#28397F] sm:text-2xl">{platillo.NombrePlatillo}</h3>
-                <p className="mt-2 text-xl font-black text-[#14502E] sm:text-2xl">C$ {precio.toFixed(2)}</p>
+                <h3 className="line-clamp-2 text-2xl font-extrabold leading-tight text-[#28397F] sm:text-2xl">{platillo.NombrePlatillo}</h3>
+                <p className="mt-2 text-2xl font-black text-[#14502E] sm:text-2xl">C$ {precio.toFixed(2)}</p>
             </div>
             <button
                 onClick={() => alAgregar(platillo.NombrePlatillo, precio)}
-                className="w-full max-w-48 rounded-xl bg-[#28397F] px-2 py-2 text-xs font-bold text-white transition-colors hover:bg-[#14502E] active:scale-95 sm:text-sm"
+                className="w-full max-w-48 rounded-xl bg-[#28397F] px-3 py-3 text-base font-bold text-white transition-colors hover:bg-[#14502E] active:scale-95 sm:py-2 sm:text-sm"
             >
                 + Añadir
             </button>

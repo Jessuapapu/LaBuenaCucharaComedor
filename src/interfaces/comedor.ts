@@ -8,6 +8,7 @@ export interface   Detalles {
     nombre_platillo: string;
     cantidad: number;
     precio_unitario: number;
+    notas?: string;
 }
 
 export interface mesa {
@@ -73,6 +74,7 @@ export interface OrdenActivaTableProps {
     ordenActivaId: number | null;
     cargandoAccion: boolean;
     alModificarCantidad: (nombre: string, delta: number) => void;
+    alCambiarNotas: (nombre: string, notas: string) => void;
     alCrearOActualizar: () => void;
     alTerminarOrden: () => void;
     alCancelarOrden: () => void; // NUEVO
